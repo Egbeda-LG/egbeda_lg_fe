@@ -1,15 +1,21 @@
-import { Geist, Geist_Mono, IBM_Plex_Sans } from "next/font/google"
-
-import "./globals.css"
+import type { Metadata } from "next"
+import { Footer } from "@/components/layout/footer"
+import { Navbar } from "@/components/layout/navbar"
+import { TopBar } from "@/components/layout/top-bar"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import "./globals.css"
 
-const ibmPlexSans = IBM_Plex_Sans({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+export const metadata: Metadata = {
+  title: "Egbeda",
+  description: "Egbeda Website",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/svgs/logo.svg", type: "image/svg+xml" },
+    ],
+    apple: "/svgs/logo.svg",
+  },
+}
 
 export default function RootLayout({
   children,
@@ -17,13 +23,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", ibmPlexSans.variable)}
-    >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-background font-sans text-[#6A7181] antialiased">
+        <ThemeProvider>
+          <TopBar />
+          <Navbar />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   )
