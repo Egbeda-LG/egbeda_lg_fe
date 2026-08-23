@@ -6,18 +6,35 @@ import { HeroSection } from "./components/hero-section"
 import { NewsSection } from "./components/news-section"
 import { ProjectsSection } from "./components/projects-section"
 import { ServicesSection } from "./components/services-section"
+import { FadeIn } from "@/components/fade-in"
 
 export function LandingPage() {
   return (
     <main className="min-h-screen">
-      <HeroSection />
-      <AboutSection />
-      <ServicesSection />
-      <ChairmanSection />
-      <DepartmentsSection />
-      <ProjectsSection />
-      <StatsSection />
-      <NewsSection />
+      <FadeIn>
+        <HeroSection />
+      </FadeIn>
+      <FadeIn>
+        <AboutSection />
+      </FadeIn>
+      <FadeIn>
+        <ServicesSection />
+      </FadeIn>
+      <FadeIn>
+        <ChairmanSection />
+      </FadeIn>
+      <FadeIn>
+        <DepartmentsSection />
+      </FadeIn>
+      <FadeIn>
+        <ProjectsSection />
+      </FadeIn>
+      <FadeIn>
+        <StatsSection />
+      </FadeIn>
+      <FadeIn>
+        <NewsSection />
+      </FadeIn>
     </main>
   )
 }

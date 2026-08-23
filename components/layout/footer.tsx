@@ -11,6 +11,42 @@ import {
   RiMailLine,
 } from "@remixicon/react"
 
+const footerColumns = [
+  {
+    heading: "QUICK LINKS",
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Government", href: "/government/executive-council" },
+      { label: "Services", href: "/services" },
+      { label: "Projects", href: "/projects" },
+      { label: "News & Media", href: "/newsroom" },
+    ],
+  },
+  {
+    heading: "GOVERNMENT",
+    links: [
+      { label: "Executive Council", href: "/government/executive-council" },
+      { label: "Management Team", href: "/government/management-team" },
+      // No route yet — the navbar carries the same placeholder.
+      { label: "NULGE Team", href: "#nulge" },
+      {
+        label: "Landmark & Culture",
+        href: "/government/landmarks-and-culture",
+      },
+    ],
+  },
+  {
+    heading: "SUPPORT",
+    links: [
+      { label: "Contact Us", href: "/contact" },
+      // These three pages are not built yet.
+      { label: "Privacy Policy", href: "#privacy" },
+      { label: "Accessibility", href: "#accessibility" },
+      { label: "Cookies Policy", href: "#cookies" },
+    ],
+  },
+]
+
 export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#7A1F33] pt-16 pb-8 text-white">
@@ -68,137 +104,35 @@ export function Footer() {
           </div>
 
           {/* 3 Equal Width Link Columns Subgrid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:col-span-8">
-            {/* Col 2: Quick Links */}
-            <div className="space-y-4">
-              <h3 className="font-heading text-xs font-bold tracking-widest text-white uppercase">
-                QUICK LINKS
-              </h3>
-              <ul className="space-y-2.5 font-sans text-xs text-white/80 sm:text-sm">
-                <li>
-                  <a
-                    href="#about"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#government"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Government
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#services"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Services
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#projects"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Projects
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#newsroom"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    News & Media
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 3: Government */}
-            <div className="space-y-4">
-              <h3 className="font-heading text-xs font-bold tracking-widest text-white uppercase">
-                GOVERNMENT
-              </h3>
-              <ul className="space-y-2.5 font-sans text-xs text-white/80 sm:text-sm">
-                <li>
-                  <a
-                    href="#executive"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Executive Council
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#management"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Management Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#nulge"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    NULGE Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#culture"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Landmark & Culture
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 4: Support */}
-            <div className="space-y-4">
-              <h3 className="font-heading text-xs font-bold tracking-widest text-white uppercase">
-                SUPPORT
-              </h3>
-              <ul className="space-y-2.5 font-sans text-xs text-white/80 sm:text-sm">
-                <li>
-                  <a
-                    href="#contact"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#privacy"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#accessibility"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Accessibility
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#cookies"
-                    className="transition-colors hover:text-[#D9A300]"
-                  >
-                    Cookies Policy
-                  </a>
-                </li>
-              </ul>
-            </div>
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:col-span-8">
+            {footerColumns.map((column) => (
+              <div key={column.heading} className="space-y-4">
+                <h3 className="font-heading text-xs font-bold tracking-widest text-white uppercase">
+                  {column.heading}
+                </h3>
+                <ul className="space-y-2.5 font-sans text-xs text-white/80 sm:text-sm">
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      {link.href.startsWith("/") ? (
+                        <Link
+                          href={link.href}
+                          className="transition-colors hover:text-[#D9A300]"
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="transition-colors hover:text-[#D9A300]"
+                        >
+                          {link.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
+import { MotionConfig } from "framer-motion"
 
 function ThemeProvider({
   children,
@@ -16,7 +17,7 @@ function ThemeProvider({
       {...props}
     >
       <ThemeHotkey />
-      {children}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </NextThemesProvider>
   )
 }
