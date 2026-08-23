@@ -1,52 +1,72 @@
-# Egbeda Local Government website
+# Egbeda Local Government
 
-This is a Next.js App Router project organized by domain module.
+The public website for Egbeda Local Government, built with the Next.js App
+Router and organised by domain module.
 
-## Architecture
+## Stack
 
-```text
-app/                 # routes, metadata, and route layouts
-components/          # presentation-first UI shared by multiple modules
-  layout/            # site-wide navigation and footer
-  ui/                # reusable UI primitives
-modules/             # feature and domain-owned code
-  about-page/         # About route composition and its owned sections
-    components/
-  contact/            # contact route and form UI
-    components/
-  government/         # council, management, and landmarks routes
-    components/
-  landing-page/       # homepage composition and its owned sections
-    components/
-  newsroom/           # newsroom listing and article routes
-    components/
-  projects/           # projects route and project UI
-    components/
-  services/           # service catalog and detail routes
-    components/
-public/              # static assets
-lib/                 # genuinely shared framework-free utilities
-```
+Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui · pnpm
 
-Keep each module flat while it is small. Add `components`, `hooks`, `service`,
-`repository`, or operation files inside a module only when the module grows and
-the new boundary adds behavior. Components call hooks, hooks call one meaningful
-service or repository boundary, and transport clients stay out of components.
-
-## Adding components
-
-To add components to your app, run the following command:
+## Getting started
 
 ```bash
-npx shadcn@latest add button
+pnpm install
+pnpm dev
 ```
 
-This places shared UI primitives in `components/ui`.
+The site runs at [http://localhost:3000](http://localhost:3000).
 
-## Using components
+## Scripts
 
-To use the components in your app, import them as follows:
+| Command          | What it does                          |
+| ---------------- | ------------------------------------- |
+| `pnpm dev`       | Start the dev server                  |
+| `pnpm build`     | Production build                      |
+| `pnpm start`     | Serve the production build            |
+| `pnpm lint`      | Lint with ESLint                      |
+| `pnpm typecheck` | Type-check without emitting           |
+| `pnpm format`    | Format `.ts`/`.tsx` with Prettier     |
 
-```tsx
-import { Button } from "@/components/ui/button"
+## Structure
+
+```text
+app/            # routes and page metadata
+components/
+  layout/       # top bar, navbar, footer
+  ui/           # shadcn/ui primitives
+modules/        # feature code, one folder per domain
+lib/            # framework-free helpers
+public/         # static assets and imagery
+```
+
+Routes stay thin: a file in `app/` renders a page component from `modules/`.
+Each module holds its composition at the root (`about-page.tsx`) and the
+sections it owns in `components/`. UI lives in the top-level `components/`
+only once more than one module needs it.
+
+## Routes
+
+| Path                                | Module          |
+| ----------------------------------- | --------------- |
+| `/`                                 | `landing-page`  |
+| `/about`                            | `about-page`    |
+| `/services`, `/services/[slug]`     | `services`      |
+| `/projects`                         | `projects`      |
+| `/newsroom`, `/newsroom/[slug]`     | `newsroom`      |
+| `/government/executive-council`     | `government`    |
+| `/government/management-team`       | `government`    |
+| `/government/landmarks-and-culture` | `government`    |
+| `/contact`                          | `contact`       |
+
+## Conventions
+
+Keep a module flat while it is small. Add `hooks`, `service`, or `repository`
+files only when the module grows and the new boundary carries real behaviour —
+components call hooks, hooks call one service or repository, and transport
+clients stay out of components.
+
+To add a shadcn/ui primitive:
+
+```bash
+pnpm dlx shadcn@latest add button
 ```
