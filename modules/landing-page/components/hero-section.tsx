@@ -24,7 +24,7 @@ export function HeroSection() {
           </div>
 
           {/* Heading */}
-          <h1 className="font-heading text-3xl leading-[1.15] font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="font-heading text-2xl leading-[1.2] font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Building a Greater <span className="text-[#D9A300]">Egbeda</span>{" "}
             <br className="hidden sm:inline" />
             Through Service and Integrity
