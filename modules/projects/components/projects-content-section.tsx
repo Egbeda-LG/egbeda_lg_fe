@@ -65,14 +65,6 @@ export function ProjectsContentSection({
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {/* Delivery Stage Badge */}
-                    <div className="absolute top-4 left-4 z-10">
-                      <span
-                        className={`rounded-md px-3 py-1 text-[10px] font-extrabold tracking-widest text-white uppercase shadow-xs ${project.stageClassName}`}
-                      >
-                        {project.stageLabel}
-                      </span>
-                    </div>
                     {/* Ward Badge */}
                     {project.wardNumber && (
                       <div className="absolute top-4 right-4 z-10">

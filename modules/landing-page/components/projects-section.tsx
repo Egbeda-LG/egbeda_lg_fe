@@ -70,15 +70,6 @@ export async function ProjectsSection() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-
-                {/* Status Badge */}
-                <div className="absolute top-4 left-4 z-10">
-                  <span
-                    className={`rounded-md px-3 py-1.5 text-[10px] font-extrabold tracking-wider text-white uppercase shadow-xs ${project.stageClassName}`}
-                  >
-                    {project.stageLabel}
-                  </span>
-                </div>
               </div>
 
               {/* Card Content */}
