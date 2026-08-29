@@ -1,68 +1,163 @@
 import React from "react"
 import Link from "next/link"
-import {
-  RiFileTextLine,
-  RiBriefcaseLine,
-  RiFilePaperLine,
-  RiHeartPulseLine,
-  RiGraduationCapLine,
-  RiDeleteBin6Line,
-  RiAlarmWarningLine,
-  RiDownloadLine,
-  RiArrowRightLine,
-} from "@remixicon/react"
+import { RiArrowRightLine } from "@remixicon/react"
 
-export function ServicesSection() {
-  const services = [
+import { servicesApi, withFallback, type ServiceItem } from "@/lib/api"
+import { toServiceCards } from "@/modules/services/services.utils"
+
+const DEFAULT_SERVICES: ServiceItem[] = [
+  {
+    _id: "service-1",
+    name: "Marriage Registry & Civil Union",
+    short_description:
+      "Register marriages, obtain official civil certificates, and verify existing licenses.",
+    description:
+      "Official marriage registration and civil certificates at Egbeda Local Government Secretariat.",
+    department: "Administration & General Services",
+    timeline: "3 - 5 business days",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-2",
+    name: "Business Premises & Trade Permit",
+    short_description:
+      "Apply for or renew your commercial trade license and SME operating permits.",
+    description:
+      "Business premise permits and commercial registration for SMEs across Egbeda LGA.",
+    department: "Finance & Supplies",
+    timeline: "2 - 4 business days",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-3",
+    name: "Birth & Age Attestation Certificate",
+    short_description:
+      "Obtain formal birth registration documents and age declarations for official use.",
+    description:
+      "Birth registration and age declarations issued by the council registry.",
+    department: "Administration & General Services",
+    timeline: "Same day - 48 hours",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-4",
+    name: "Waste Clearance & Sanitation Permit",
+    short_description:
+      "Schedule municipal refuse collection and request commercial waste inspections.",
+    description:
+      "Environmental sanitation clearance, scheduled waste collection, and hygiene certificates.",
+    department: "Environment & Health Services",
+    timeline: "1 - 3 business days",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-5",
+    name: "Market Stall Allocation & Shop Lease",
+    short_description:
+      "Register for public market stalls, lockup shops, and trading spaces in council markets.",
+    description:
+      "Allocation and leasing of retail market stalls across municipal markets in Egbeda.",
+    department: "Finance & Supplies",
+    timeline: "5 - 7 business days",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-6",
+    name: "Community Hall & Venue Booking",
+    short_description:
+      "Reserve public event venues, council town halls, and community civic centres.",
+    description:
+      "Booking civic centres and town halls for community events, receptions, and meetings.",
+    department: "Works & Housing",
+    timeline: "Immediate confirmation",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-7",
+    name: "Primary Health & Maternal Care",
+    short_description:
+      "Access maternal health checkups, infant immunisations, and community wellness care.",
+    description:
+      "Consultation, routine immunization, and primary care services across council health centres.",
+    department: "Primary Healthcare",
+    timeline: "Walk-in / Same day",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    _id: "service-8",
+    name: "Building Plan Approval & Permits",
+    short_description:
+      "Submit architectural plans for zoning compliance and civil engineering review.",
+    description:
+      "Statutory building plan approvals and structural safety permits in Egbeda LGA.",
+    department: "Works & Housing",
+    timeline: "7 - 14 business days",
+    eligibility: [],
+    required_documents: [],
+    application_process: [],
+    status: "published",
+    is_featured: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+]
+
+export async function ServicesSection() {
+  const response = await withFallback(
+    () => servicesApi.list({ limit: 8 }),
     {
-      icon: RiFileTextLine,
-      title: "Birth Certificate",
-      description: "Register and obtain certified birth records.",
-      href: "/services",
+      items: DEFAULT_SERVICES,
+      meta: { page: 1, limit: 8, total: 8, totalPages: 1 },
     },
-    {
-      icon: RiBriefcaseLine,
-      title: "Business Registration",
-      description: "Formalise your business within the LGA.",
-      href: "/services",
-    },
-    {
-      icon: RiFilePaperLine,
-      title: "Marriage Registration",
-      description: "Book, register and collect marriage certificates.",
-      href: "/services/marriage-registration",
-    },
-    {
-      icon: RiHeartPulseLine,
-      title: "Primary Healthcare",
-      description: "Primary healthcare and public health support.",
-      href: "/services",
-    },
-    {
-      icon: RiGraduationCapLine,
-      title: "Education & Social Services",
-      description: "Public schools, scholarships and programmes.",
-      href: "/services",
-    },
-    {
-      icon: RiDeleteBin6Line,
-      title: "Waste Management",
-      description: "Collection schedule and reporting tools.",
-      href: "/services",
-    },
-    {
-      icon: RiAlarmWarningLine,
-      title: "Emergency Contacts",
-      description: "24/7 security, fire and medical lines.",
-      href: "/contact",
-    },
-    {
-      icon: RiDownloadLine,
-      title: "Downloads",
-      description: "Official forms, gazettes and publications.",
-      href: "/services",
-    },
-  ]
+    "landing services"
+  )
+
+  const items = response.items.length > 0 ? response.items : DEFAULT_SERVICES
+  const services = toServiceCards(items)
+
+  if (services.length === 0) return null
 
   return (
     <section
@@ -106,17 +201,20 @@ export function ServicesSection() {
 
         {/* 4x2 Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((service, index) => {
-            const IconComponent = service.icon
+          {services.map((service) => {
+            const IconComponent = service.Icon
             return (
               <div
-                key={index}
+                key={service.id}
                 className="group flex flex-col justify-between rounded-2xl border border-gray-100/90 bg-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
               >
                 <div>
                   {/* Icon Badge */}
-                  <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-full bg-[#FAF0E6] transition-transform group-hover:scale-105">
-                    <IconComponent size={20} className="text-[#7A1F33]" />
+                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-[#7A1F33]/10 bg-[#FAF0E6] text-[#7A1F33] shadow-xs transition-all duration-200 group-hover:scale-105 group-hover:bg-[#7A1F33] group-hover:text-[#FAF0E6] group-hover:shadow-sm">
+                    <IconComponent
+                      size={22}
+                      className="transition-colors duration-200"
+                    />
                   </div>
 
                   {/* Card Title */}

@@ -3,56 +3,19 @@ import Image from "next/image"
 import Link from "next/link"
 import { RiMapPinLine, RiArrowRightLine } from "@remixicon/react"
 
-export function ProjectsSection() {
-  const projects = [
-    {
-      title: "Food bank initiative",
-      location: "Egbeda Central",
-      description:
-        "Food bank initiative to cushion effect of economic hardship and inflation in Egbeda local government",
-      image: "/images/project-food-bank.jpg",
-      status: "COMPLETED",
-    },
-    {
-      title: "Egbeda Flood Control Channel",
-      location: "Egbeda Main Road",
-      description:
-        "Dredging of stream to avoid flood water submerged in Egbeda local government",
-      image: "/images/project-flood-control.jpg",
-      status: "COMPLETED",
-    },
-    {
-      title: "Cash Empowerment",
-      location: "Egbeda Central",
-      description:
-        "Presentation of cheque to Egbeda community development council (CDC) members",
-      image: "/images/project-cash-empowerment-1.jpg",
-      status: "COMPLETED",
-    },
-    {
-      title: "Security",
-      location: "Egbeda Police Station",
-      description: "Renovation of maku police station and motorcycle to police",
-      image: "/images/project-security.jpg",
-      status: "COMPLETED",
-    },
-    {
-      title: "Road Construction",
-      location: "College of Education Road",
-      description:
-        "Construction of Pedestrian bridge at ADABI(Ward 11) opposite mufu olanihun college of education.",
-      image: "/images/project-road-construction.jpg",
-      status: "COMPLETED",
-    },
-    {
-      title: "Cash Empowerment",
-      location: "Egbeda Local Government",
-      description:
-        "Commissioning of renovated Tamunominini multipurpose Hall at SDP premises wema bank, Egbeda Local Government",
-      image: "/images/project-cash-empowerment-2.jpg",
-      status: "COMPLETED",
-    },
-  ]
+import { projectsApi, withFallback } from "@/lib/api"
+import { toProjectCards } from "@/modules/projects/projects.utils"
+
+export async function ProjectsSection() {
+  const response = await withFallback(
+    () => projectsApi.list({ limit: 6 }),
+    { items: [], meta: { page: 1, limit: 6, total: 0, totalPages: 0 } },
+    "landing projects"
+  )
+
+  const projects = toProjectCards(response.items)
+
+  if (projects.length === 0) return null
 
   return (
     <section id="projects" className="bg-white py-16 md:py-24">
@@ -93,9 +56,9 @@ export function ProjectsSection() {
 
         {/* 3x2 Grid of Project Cards */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => (
+          {projects.map((project) => (
             <div
-              key={index}
+              key={project.id}
               className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100/90 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
             >
               {/* Card Image with Status Overlay */}
@@ -110,8 +73,10 @@ export function ProjectsSection() {
 
                 {/* Status Badge */}
                 <div className="absolute top-4 left-4 z-10">
-                  <span className="rounded-md bg-[#10B981] px-3 py-1.5 text-[10px] font-extrabold tracking-wider text-white uppercase shadow-xs">
-                    {project.status}
+                  <span
+                    className={`rounded-md px-3 py-1.5 text-[10px] font-extrabold tracking-wider text-white uppercase shadow-xs ${project.stageClassName}`}
+                  >
+                    {project.stageLabel}
                   </span>
                 </div>
               </div>
