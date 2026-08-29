@@ -202,3 +202,99 @@
 }
 
 .article-body figure { margin: 1.5rem 0; }
+
+/*
+ * Browser autofill paints its own background over inputs, which fought the
+ * form's styling. The inset shadow trick repaints the field, and the long
+ * transition keeps the browser from flashing its colour back in.
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: #131313;
+    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset;
+    box-shadow: 0 0 0 1000px #FFFFFF inset;
+    caret-color: #131313;
+    border-radius: 0.75rem;
+    transition: background-color 100000s ease-in-out 0s;
+}
+
+/*
+ * react-phone-number-input ships unstyled markup; these rules make the country
+ * select and the number field read as one control matching the other inputs.
+ */
+.phone-field .PhoneInput {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    border: 1px solid var(--color-gray-200, #E5E7EB);
+    border-radius: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    background: #FFFFFF;
+    transition: border-color 150ms ease;
+}
+
+.phone-field .PhoneInput--focus,
+.phone-field .PhoneInput:focus-within {
+    border-color: #7A1F33;
+}
+
+.phone-field[data-invalid="true"] .PhoneInput {
+    border-color: #EF4444;
+}
+
+.phone-field .PhoneInputCountry {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    padding-right: 0.5rem;
+    border-right: 1px solid var(--color-gray-200, #E5E7EB);
+    align-self: stretch;
+}
+
+.phone-field .PhoneInputCountryIcon {
+    width: 1.5rem;
+    height: 1.05rem;
+    box-shadow: none;
+    border-radius: 0.15rem;
+    overflow: hidden;
+}
+
+.phone-field .PhoneInputCountryIcon--border {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.phone-field .PhoneInputCountrySelectArrow {
+    width: 0.35rem;
+    height: 0.35rem;
+    opacity: 0.5;
+    color: #6A7181;
+}
+
+.phone-field .PhoneInputInput {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0.75rem 0.25rem;
+    font-size: 0.75rem;
+    color: #131313;
+}
+
+@media (min-width: 640px) {
+    .phone-field .PhoneInputInput {
+        font-size: 0.875rem;
+    }
+}
+
+.phone-field .PhoneInputInput::placeholder {
+    color: #9CA3AF;
+}
