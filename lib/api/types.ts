@@ -74,6 +74,12 @@ export type WardItem = {
   name: string
 }
 
+/** `GET /markets` — a council-managed market, keyed by `market_number`. */
+export type MarketItem = {
+  market_number: string
+  name: string
+}
+
 export type NewsItem = Timestamps & {
   _id: string
   title: string

@@ -11,6 +11,7 @@ export {
   departmentsApi,
   landmarksApi,
   managementApi,
+  marketsApi,
   messagesApi,
   newsApi,
   nulgeApi,

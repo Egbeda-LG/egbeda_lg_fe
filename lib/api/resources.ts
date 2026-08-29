@@ -7,6 +7,7 @@ import type {
   CouncillorItem,
   DepartmentItem,
   LandmarkItem,
+  MarketItem,
   ManagementItem,
   NewsItem,
   NewsStats,
@@ -45,8 +46,9 @@ export const REVALIDATE = {
   nulge: 120,
   /** Drives the top bar, footer and every statistic, so keep it current. */
   organizationSettings: 60,
-  /** Ward boundaries effectively never change. */
+  /** Ward boundaries and the market register effectively never change. */
   wards: 3600,
+  markets: 3600,
   /** Admin inbox data - never cached, and never rendered publicly. */
   messages: 0,
 } as const
@@ -137,6 +139,23 @@ export const wardsApi = {
     apiFetch<WardItem>(`${API_PREFIX}/wards/${id}`, {
       tags: ["wards", `wards:${id}`],
       revalidate: options.revalidate ?? REVALIDATE.wards,
+    }),
+}
+
+/** `GET /markets` answers with a bare array, keyed by `market_number`. */
+export const marketsApi = {
+  resource: "markets",
+  path: `${API_PREFIX}/markets`,
+  tags: ["markets"],
+  list: (options: { revalidate?: number } = {}) =>
+    apiFetch<MarketItem[]>(`${API_PREFIX}/markets`, {
+      tags: ["markets"],
+      revalidate: options.revalidate ?? REVALIDATE.markets,
+    }),
+  getById: (marketNumber: string, options: { revalidate?: number } = {}) =>
+    apiFetch<MarketItem>(`${API_PREFIX}/markets/${marketNumber}`, {
+      tags: ["markets", `markets:${marketNumber}`],
+      revalidate: options.revalidate ?? REVALIDATE.markets,
     }),
 }
 

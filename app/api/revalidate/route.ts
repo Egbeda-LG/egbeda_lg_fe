@@ -16,6 +16,7 @@ const KNOWN_TAGS = [
   "nulge",
   "messages",
   "wards",
+  "markets",
   "organization-settings",
 ] as const
 

@@ -19,11 +19,11 @@ The site runs at [http://localhost:3000](http://localhost:3000).
 
 ### Environment
 
-| Variable                   | What it is                                           |
-| -------------------------- | ---------------------------------------------------- |
-| `NEXT_PUBLIC_API_BASE_URL` | Egbeda LG backend root, without the `/api/v1` prefix  |
+| Variable                   | What it is                                                     |
+| -------------------------- | -------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL` | Egbeda LG backend root, without the `/api/v1` prefix           |
 | `NEXT_PUBLIC_SITE_URL`     | Public origin, used for canonicals, Open Graph and the sitemap |
-| `REVALIDATE_SECRET`        | Shared secret for `POST /api/revalidate` (server-only) |
+| `REVALIDATE_SECRET`        | Shared secret for `POST /api/revalidate` (server-only)         |
 
 `NEXT_PUBLIC_API_BASE_URL` defaults to the dev API
 (`https://egbeda-api-dev.jumpingcrab.com`). `NEXT_PUBLIC_SITE_URL` defaults to
@@ -32,14 +32,14 @@ launch**, or every canonical and sitemap URL will point at the wrong host.
 
 ## Scripts
 
-| Command          | What it does                          |
-| ---------------- | ------------------------------------- |
-| `pnpm dev`       | Start the dev server                  |
-| `pnpm build`     | Production build                      |
-| `pnpm start`     | Serve the production build            |
-| `pnpm lint`      | Lint with ESLint                      |
-| `pnpm typecheck` | Type-check without emitting           |
-| `pnpm format`    | Format `.ts`/`.tsx` with Prettier     |
+| Command          | What it does                      |
+| ---------------- | --------------------------------- |
+| `pnpm dev`       | Start the dev server              |
+| `pnpm build`     | Production build                  |
+| `pnpm start`     | Serve the production build        |
+| `pnpm lint`      | Lint with ESLint                  |
+| `pnpm typecheck` | Type-check without emitting       |
+| `pnpm format`    | Format `.ts`/`.tsx` with Prettier |
 
 ## Structure
 
@@ -62,17 +62,17 @@ only once more than one module needs it.
 
 ## Routes
 
-| Path                                | Module          |
-| ----------------------------------- | --------------- |
-| `/`                                 | `landing-page`  |
-| `/about`                            | `about-page`    |
-| `/services`, `/services/[slug]`     | `services`      |
-| `/projects`                         | `projects`      |
-| `/newsroom`, `/newsroom/[slug]`     | `newsroom`      |
-| `/government/executive-council`     | `government`    |
-| `/government/management-team`       | `government`    |
-| `/government/landmarks-and-culture` | `government`    |
-| `/contact`                          | `contact`       |
+| Path                                | Module         |
+| ----------------------------------- | -------------- |
+| `/`                                 | `landing-page` |
+| `/about`                            | `about-page`   |
+| `/services`, `/services/[slug]`     | `services`     |
+| `/projects`                         | `projects`     |
+| `/newsroom`, `/newsroom/[slug]`     | `newsroom`     |
+| `/government/executive-council`     | `government`   |
+| `/government/management-team`       | `government`   |
+| `/government/landmarks-and-culture` | `government`   |
+| `/contact`                          | `contact`      |
 
 ## Conventions
 
@@ -96,10 +96,10 @@ browser bundle.
 
 `lib/api/` mirrors the admin app's layer, minus the writes:
 
-| File                     | What it holds                                             |
-| ------------------------ | --------------------------------------------------------- |
-| `client.ts`              | Base URL and the `fetch` wrapper with revalidation and tags |
-| `request`/`errors.ts`    | `ApiError`, plus a readable message for any failure         |
+| File                     | What it holds                                                |
+| ------------------------ | ------------------------------------------------------------ |
+| `client.ts`              | Base URL and the `fetch` wrapper with revalidation and tags  |
+| `request`/`errors.ts`    | `ApiError`, plus a readable message for any failure          |
 | `types.ts`               | Response shapes, verified against the live dev API           |
 | `enums.ts`               | Option values and their labels, mirrored from the admin app  |
 | `list-query.ts`          | Query builder that drops empty values and the `all` sentinel |
@@ -112,7 +112,7 @@ Add a resource by declaring it in `resources.ts`:
 export const noticesApi = createReadRepository<NoticeItem>(
   "notices",
   "/api/v1/notices",
-  { defaultQuery: { status: "published" } },
+  { defaultQuery: { status: "published" } }
 )
 ```
 
@@ -125,13 +125,13 @@ its empty state rather than failing the page. Detail routes address records as
 Every read is cached and tagged with its resource name. `REVALIDATE` in
 `lib/api/resources.ts` sets how long each one stays fresh on its own:
 
-| Resource                                            | Window |
-| --------------------------------------------------- | ------ |
-| `news`                                              | 30s    |
-| `projects`, `services`, `organization-settings`      | 60s    |
-| `landmarks`, `departments`, `councillors`, `management`, `nulge` | 120s |
-| `wards`                                             | 1 hour |
-| `messages`                                          | uncached |
+| Resource                                                         | Window   |
+| ---------------------------------------------------------------- | -------- |
+| `news`                                                           | 30s      |
+| `projects`, `services`, `organization-settings`                  | 60s      |
+| `landmarks`, `departments`, `councillors`, `management`, `nulge` | 120s     |
+| `wards`, `markets`                                               | 1 hour   |
+| `messages`                                                       | uncached |
 
 Those windows are only the ceiling. `POST /api/revalidate` clears a tag
 immediately, so an edit in the admin app goes live on the next request rather
@@ -169,11 +169,11 @@ pnpm tron   # open the desktop app (listens on 9090)
 pnpm dev    # both clients connect on boot
 ```
 
-| File | Runs in | Shows |
-| ---- | ------- | ----- |
-| `lib/reactotron/server.ts` | Node | Every `apiFetch` — URL, query, status, body, duration, cache policy |
-| `lib/reactotron/browser.ts` | Browser | Client components; `tron.log(…)` from the devtools console |
-| `components/reactotron-provider.tsx` | Browser | Starts the browser client, dev only |
+| File                                 | Runs in | Shows                                                               |
+| ------------------------------------ | ------- | ------------------------------------------------------------------- |
+| `lib/reactotron/server.ts`           | Node    | Every `apiFetch` — URL, query, status, body, duration, cache policy |
+| `lib/reactotron/browser.ts`          | Browser | Client components; `tron.log(…)` from the devtools console          |
+| `components/reactotron-provider.tsx` | Browser | Starts the browser client, dev only                                 |
 
 Two clients appear in Reactotron's device list: **Egbeda Website · server** and
 **Egbeda Website · browser**.
@@ -184,26 +184,28 @@ build check confirms zero occurrences of `reactotron` in `.next/static`. If the
 desktop app is not running, the socket simply never opens and every call is a
 no-op; nothing throws.
 
-| Variable | Default | Purpose |
-| -------- | ------- | ------- |
-| `REACTOTRON_HOST` | `localhost` | Server client host |
-| `REACTOTRON_PORT` | `9090` | Server client port |
+| Variable                      | Default     | Purpose             |
+| ----------------------------- | ----------- | ------------------- |
+| `REACTOTRON_HOST`             | `localhost` | Server client host  |
+| `REACTOTRON_PORT`             | `9090`      | Server client port  |
 | `NEXT_PUBLIC_REACTOTRON_HOST` | `localhost` | Browser client host |
 
 ### Endpoint coverage
 
-| Resource                | Where it renders                                       |
-| ----------------------- | ------------------------------------------------------ |
-| `news`                  | Landing newsroom block, `/newsroom`, `/newsroom/[slug]` |
-| `projects`              | Landing projects block, `/projects`                    |
-| `services`              | Landing services block, `/services`, `/services/[slug]` |
-| `landmarks`             | `/government/landmarks-and-culture`                     |
-| `departments`           | Landing departments block                               |
-| `councillors`           | `/government/executive-council`                         |
-| `management`, `nulge`   | `/government/management-team`                           |
-| `wards`                 | Communities section, project ward filter                |
-| `organization-settings` | Top bar, footer, about, contact, stats, chairman blocks |
-| `messages`              | Repository only — the inbox belongs to the admin app    |
+| Resource                | Where it renders                                          |
+| ----------------------- | --------------------------------------------------------- |
+| `news`                  | Landing newsroom block, `/newsroom`, `/newsroom/[slug]`   |
+| `projects`              | Landing projects block, `/projects`                       |
+| `services`              | Landing services block, `/services`, `/services/[slug]`   |
+| `landmarks`             | `/government/landmarks-and-culture`                       |
+| `departments`           | Landing departments block                                 |
+| `councillors`           | `/government/executive-council`                           |
+| `management`            | `/government/management-team`                             |
+| `nulge`                 | `/government/nulge`                                       |
+| `wards`                 | Communities section, project ward filter                  |
+| `markets`               | Communities section                                       |
+| `organization-settings` | Top bar, footer, about, contact, stats, chairman blocks   |
+| `messages`              | Contact form writes via `POST`; reads need an admin token |
 
 ## SEO
 
