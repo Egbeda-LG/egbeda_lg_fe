@@ -3,13 +3,26 @@ import Link from "next/link"
 import { Icon } from "@/components/icon"
 import {
   RiFacebookFill,
-  RiTwitterXFill,
   RiInstagramLine,
-  RiYoutubeFill,
-  RiMapPinLine,
-  RiTimeLine,
   RiMailLine,
+  RiMapPinLine,
+  RiTiktokFill,
+  RiTimeLine,
+  RiTwitterXFill,
+  type RemixiconComponentType,
 } from "@remixicon/react"
+
+import { organizationSettingsApi, withFallback } from "@/lib/api"
+
+const SOCIAL_ICONS: Record<
+  string,
+  { Icon: RemixiconComponentType; label: string }
+> = {
+  facebook: { Icon: RiFacebookFill, label: "Facebook" },
+  twitter: { Icon: RiTwitterXFill, label: "Twitter X" },
+  instagram: { Icon: RiInstagramLine, label: "Instagram" },
+  tiktok: { Icon: RiTiktokFill, label: "TikTok" },
+}
 
 const footerColumns = [
   {
@@ -27,8 +40,7 @@ const footerColumns = [
     links: [
       { label: "Executive Council", href: "/government/executive-council" },
       { label: "Management Team", href: "/government/management-team" },
-      // No route yet — the navbar carries the same placeholder.
-      { label: "NULGE Team", href: "#nulge" },
+      { label: "NULGE Team", href: "/government/nulge" },
       {
         label: "Landmark & Culture",
         href: "/government/landmarks-and-culture",
@@ -47,7 +59,29 @@ const footerColumns = [
   },
 ]
 
-export function Footer() {
+export async function Footer() {
+  const settings = await withFallback(
+    () => organizationSettingsApi.get(),
+    {},
+    "organization settings"
+  )
+
+  const organization = settings.organization
+  const contact = settings.contact_and_support
+
+  const councilName = organization?.official_name ?? "Egbeda Local Government"
+  const address =
+    contact?.headquater_address ??
+    "Egbeda Local Government Secretariat, Egbeda, Ibadan, Oyo State"
+  const email = contact?.official_email ?? "egbedalocalgovernment@gmail.com"
+  const officeHours =
+    [contact?.weekdays, contact?.hours].filter(Boolean).join(", ") ||
+    "Monday — Friday, 8am - 4pm"
+
+  const socials = (settings.social_media ?? []).filter(
+    (link) => link.url && SOCIAL_ICONS[link.platform?.toLowerCase()]
+  )
+
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#7A1F33] pt-16 pb-8 text-white">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
@@ -61,7 +95,7 @@ export function Footer() {
                 className="transition-transform group-hover:scale-105"
               />
               <span className="font-heading text-lg font-extrabold tracking-tight text-white sm:text-xl">
-                Egbeda Local Government
+                {councilName}
               </span>
             </Link>
 
@@ -71,36 +105,27 @@ export function Footer() {
             </p>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-3 pt-2">
-              <a
-                href="#facebook"
-                aria-label="Facebook"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D9A300] hover:text-[#131313]"
-              >
-                <RiFacebookFill size={16} />
-              </a>
-              <a
-                href="#twitter"
-                aria-label="Twitter X"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D9A300] hover:text-[#131313]"
-              >
-                <RiTwitterXFill size={16} />
-              </a>
-              <a
-                href="#instagram"
-                aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D9A300] hover:text-[#131313]"
-              >
-                <RiInstagramLine size={16} />
-              </a>
-              <a
-                href="#youtube"
-                aria-label="YouTube"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D9A300] hover:text-[#131313]"
-              >
-                <RiYoutubeFill size={16} />
-              </a>
-            </div>
+            {socials.length > 0 && (
+              <div className="flex items-center gap-3 pt-2">
+                {socials.map((link) => {
+                  const { Icon: SocialIcon, label } =
+                    SOCIAL_ICONS[link.platform.toLowerCase()]
+
+                  return (
+                    <a
+                      key={`${link.platform}-${link.url}`}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D9A300] hover:text-[#131313]"
+                    >
+                      <SocialIcon size={16} />
+                    </a>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* 3 Equal Width Link Columns Subgrid */}
@@ -148,7 +173,7 @@ export function Footer() {
                 MAIN OFFICE
               </span>
               <p className="mt-0.5 text-xs leading-snug font-semibold text-white">
-                Egbeda Local Government Secretariat, Egbeda, Ibadan, Oyo State
+                {address}
               </p>
             </div>
           </div>
@@ -163,7 +188,7 @@ export function Footer() {
                 OFFICE HOUR
               </span>
               <p className="mt-0.5 text-xs leading-snug font-semibold text-white">
-                Monday — Friday, 8am - 4pm
+                {officeHours}
               </p>
               <span className="block text-[10px] text-white/50">
                 We are available
@@ -181,10 +206,10 @@ export function Footer() {
                 EMAIL SUPPORT
               </span>
               <a
-                href="mailto:egbedalocalgovernment@gmail.com"
+                href={`mailto:${contact?.support_email ?? email}`}
                 className="mt-0.5 block text-xs leading-snug font-semibold text-white transition-colors hover:text-[#D9A300]"
               >
-                egbedalocalgovernment@gmail.com
+                {contact?.support_email ?? email}
               </a>
               <span className="block text-[10px] text-white/50">
                 We usually respond within 24hrs
@@ -195,7 +220,11 @@ export function Footer() {
 
         {/* Bottom Copyright Bar */}
         <div className="pt-8 text-center font-sans text-xs text-white/60 md:text-left">
-          <p>© 2026 Egbeda Local Government, Oyo State. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} {councilName}
+            {organization?.state ? `, ${organization.state} State` : ""}. All
+            rights reserved.
+          </p>
         </div>
       </div>
     </footer>

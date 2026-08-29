@@ -1,46 +1,89 @@
 import React from "react"
 import {
-  RiUserLine,
-  RiGraduationCapLine,
-  RiStore2Line,
-  RiHeartLine,
-  RiMapPin2Line,
-  RiBriefcaseLine,
-} from "@remixicon/react"
+  SnapshotPopulationIcon,
+  SnapshotSchoolsIcon,
+  SnapshotHealthCentresIcon,
+  SnapshotWardsIcon,
+  SnapshotLandmassIcon,
+  SnapshotStaffStrengthIcon,
+  type SnapshotIconComponent,
+} from "@/components/snapshot-icons"
 
-export function StatsSection() {
-  const stats = [
+import {
+  organizationSettingsApi,
+  withFallback,
+  type OrganizationDetails,
+} from "@/lib/api"
+import { formatNumber } from "@/lib/content"
+
+type Stat = {
+  icon: SnapshotIconComponent
+  value?: number
+  label: string
+}
+
+const DEFAULT_ORGANIZATION: Partial<OrganizationDetails> = {
+  population: 385000,
+  no_of_schools: 42,
+  no_of_health_centres: 18,
+  no_of_wards: 11,
+  landmass_per_sq_km: 191,
+  no_of_staffs: 520,
+}
+
+/**
+ * Reads its own figures from the council's organisation settings — the section
+ * appears on more than one page, and identical fetches are shared within a
+ * render pass, so there is nothing to thread through as props.
+ */
+export async function StatsSection() {
+  const settings = await withFallback(
+    () => organizationSettingsApi.get(),
+    { organization: DEFAULT_ORGANIZATION },
+    "organization settings"
+  )
+
+  const organization = {
+    ...DEFAULT_ORGANIZATION,
+    ...settings.organization,
+  }
+
+  const stats: Stat[] = [
     {
-      icon: RiUserLine,
-      value: "412,000",
+      icon: SnapshotPopulationIcon,
+      value: organization?.population,
       label: "Population",
     },
     {
-      icon: RiGraduationCapLine,
-      value: "58",
+      icon: SnapshotSchoolsIcon,
+      value: organization?.no_of_schools,
       label: "Public Schools",
     },
     {
-      icon: RiStore2Line,
-      value: "9",
-      label: "Markets",
-    },
-    {
-      icon: RiHeartLine,
-      value: "12",
+      icon: SnapshotHealthCentresIcon,
+      value: organization?.no_of_health_centres,
       label: "Health Centres",
     },
     {
-      icon: RiMapPin2Line,
-      value: "140",
-      label: "Kilometres of Roads",
+      icon: SnapshotWardsIcon,
+      value: organization?.no_of_wards,
+      label: "Wards",
     },
     {
-      icon: RiBriefcaseLine,
-      value: "620",
+      icon: SnapshotLandmassIcon,
+      value: organization?.landmass_per_sq_km,
+      label: "Square Kilometres",
+    },
+    {
+      icon: SnapshotStaffStrengthIcon,
+      value: organization?.no_of_staffs,
       label: "Staff Strength",
     },
   ]
+
+  const available = stats.filter((stat) => typeof stat.value === "number")
+
+  if (available.length === 0) return null
 
   return (
     <section
@@ -66,24 +109,27 @@ export function StatsSection() {
           </h2>
         </div>
 
-        {/* 6 Stats Grid */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6">
-          {stats.map((stat, index) => {
+          {available.map((stat) => {
             const IconComponent = stat.icon
+
             return (
               <div
-                key={index}
+                key={stat.label}
                 className="group flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-black/20 p-6 text-center backdrop-blur-xs transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 sm:p-7"
               >
-                {/* Icon */}
-                <IconComponent
-                  size={24}
-                  className="mb-3 text-[#D9A300] transition-transform group-hover:scale-110"
-                />
+                {/* Icon Container */}
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-black/25 text-[#D9A300] ring-1 ring-[#D9A300]/25 transition-all duration-300 group-hover:scale-110 group-hover:bg-[#D9A300] group-hover:text-[#7A1F33] group-hover:ring-[#D9A300]">
+                  <IconComponent
+                    size={22}
+                    className="transition-colors duration-300"
+                  />
+                </div>
 
                 {/* Number Value */}
                 <div className="my-1 font-heading text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                  {stat.value}
+                  {formatNumber(stat.value)}
                 </div>
 
                 {/* Label */}
