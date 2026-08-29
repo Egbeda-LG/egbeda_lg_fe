@@ -1,7 +1,18 @@
 import React from "react"
 import Link from "next/link"
 
-export function ProjectsHeroSection() {
+interface ProjectsHeroSectionProps {
+  /** Published projects, used for the standfirst copy. */
+  total: number
+  wardsCovered?: number
+  totalWards?: number
+}
+
+export function ProjectsHeroSection({
+  total,
+  wardsCovered,
+  totalWards,
+}: ProjectsHeroSectionProps) {
   return (
     <section className="border-b border-gray-100 bg-white py-10 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
@@ -17,13 +28,16 @@ export function ProjectsHeroSection() {
 
             {/* Headline */}
             <h1 className="font-heading text-3xl leading-tight font-extrabold tracking-tight text-[#131313] sm:text-4xl lg:text-5xl">
-              Project Infastructure
+              Project Infrastructure
             </h1>
 
             {/* Subtitle */}
             <p className="font-sans text-sm leading-relaxed text-[#6A7181] sm:text-base">
-              Real-time status on the infrastructure and community projects
-              underway across Egbeda&apos;s wards.
+              {total > 0 && wardsCovered && totalWards
+                ? `${total} infrastructure and community ${
+                    total === 1 ? "project" : "projects"
+                  } across ${wardsCovered} of Egbeda's ${totalWards} wards.`
+                : "Real-time status on the infrastructure and community projects underway across Egbeda's wards."}
             </p>
 
             {/* Breadcrumbs */}
@@ -33,7 +47,7 @@ export function ProjectsHeroSection() {
               </Link>
               <span>/</span>
               <span className="font-bold text-[#D9A300]">
-                Project Infastructure
+                Project Infrastructure
               </span>
             </div>
           </div>
