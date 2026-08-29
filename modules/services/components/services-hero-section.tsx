@@ -1,6 +1,16 @@
 import React from "react"
 
-export function ServicesHeroSection() {
+interface ServicesHeroSectionProps {
+  /** Services currently published, used for the standfirst copy. */
+  count: number
+  /** Distinct departments those services belong to. */
+  departments: number
+}
+
+export function ServicesHeroSection({
+  count,
+  departments,
+}: ServicesHeroSectionProps) {
   return (
     <section className="border-b border-gray-100 bg-white py-12 sm:py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
@@ -21,9 +31,11 @@ export function ServicesHeroSection() {
 
             {/* Description */}
             <p className="font-sans text-sm leading-relaxed text-[#6A7181] sm:text-base">
-              Fifteen citizen services across seven categories — with clear
-              fees, timelines and application paths. Search or filter to find
-              what you need.
+              {count > 0
+                ? `${count} citizen ${count === 1 ? "service" : "services"} across ${departments} ${
+                    departments === 1 ? "department" : "departments"
+                  } — with clear timelines and application paths.`
+                : "Citizen services across every council department — with clear timelines and application paths."}
             </p>
           </div>
 
