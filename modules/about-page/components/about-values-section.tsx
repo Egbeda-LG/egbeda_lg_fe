@@ -1,22 +1,26 @@
 import React from "react"
-import { RiTimeLine, RiEyeLine, RiStarLine } from "@remixicon/react"
+import {
+  MissionIcon,
+  VisionIcon,
+  CoreValuesIcon,
+} from "@/components/about-icons"
 
 export function AboutValuesSection() {
   const cards = [
     {
-      icon: RiTimeLine,
+      icon: MissionIcon,
       title: "Our Mission",
       description:
         "To deliver transparent, efficient, and people-centred governance that improves quality of life for every resident of Egbeda.",
     },
     {
-      icon: RiEyeLine,
+      icon: VisionIcon,
       title: "Our Vision",
       description:
         "A well-planned, prosperous, and secure Egbeda recognized as a model local government area in Ibadan, Oyo State.",
     },
     {
-      icon: RiStarLine,
+      icon: CoreValuesIcon,
       title: "Core Values",
       description:
         "Integrity, service, equity, accountability and community. The standards that guide every decision we make in Egbeda local government.",
@@ -36,8 +40,11 @@ export function AboutValuesSection() {
               >
                 <div>
                   {/* Icon Badge */}
-                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl border border-[#7A1F331A] bg-[#7A1F33]/10 transition-transform group-hover:scale-105">
-                    <IconComponent size={20} className="text-[#7A1F33]" />
+                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl border border-[#7A1F33]/10 bg-[#FAF0E6] text-[#7A1F33] shadow-xs transition-all duration-200 group-hover:scale-105 group-hover:bg-[#7A1F33] group-hover:text-[#FAF0E6] group-hover:shadow-sm">
+                    <IconComponent
+                      size={22}
+                      className="transition-colors duration-200"
+                    />
                   </div>
 
                   {/* Title */}

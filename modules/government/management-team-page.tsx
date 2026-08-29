@@ -1,15 +1,35 @@
 import { ManagementTeamHeroSection } from "./components/management-team-hero-section"
 import { ManagementTeamSection } from "./components/management-team-section"
 import { FadeIn } from "@/components/fade-in"
+import {
+  MANAGEMENT_OFFICE_OPTIONS,
+  managementApi,
+  withFallback,
+} from "@/lib/api"
+import {
+  sortByOffice,
+  toManagementCard,
+} from "@/modules/government/government.utils"
 
-export function ManagementTeamPage() {
+export async function ManagementTeamPage() {
+  const management = await withFallback(
+    () => managementApi.list({ limit: 60 }),
+    { items: [], meta: { page: 1, limit: 60, total: 0, totalPages: 0 } },
+    "management list"
+  )
+
   return (
     <main className="min-h-screen">
       <FadeIn>
         <ManagementTeamHeroSection />
       </FadeIn>
       <FadeIn>
-        <ManagementTeamSection />
+        <ManagementTeamSection
+          officials={sortByOffice(
+            management.items,
+            MANAGEMENT_OFFICE_OPTIONS
+          ).map(toManagementCard)}
+        />
       </FadeIn>
     </main>
   )

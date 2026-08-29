@@ -1,33 +1,56 @@
 "use client"
 
 import React, { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input"
+import "react-phone-number-input/style.css"
 import {
   RiMapPinLine,
   RiMailLine,
   RiTimeLine,
-  RiUpload2Line,
   RiArrowRightLine,
   RiCheckLine,
+  RiErrorWarningLine,
 } from "@remixicon/react"
 import { ContactMapIllustration } from "./contact-map-illustration"
+import type { ContactAndSupport } from "@/lib/api"
+import {
+  submitContactMessage,
+  type ContactFormValues,
+} from "@/modules/contact/contact.actions"
 
-export interface ContactFormData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  subject: string
-  message: string
+export type ContactFormData = ContactFormValues
+
+interface ContactContentSectionProps {
+  /** The council's published contact details, when settings have been saved. */
+  contact?: Partial<ContactAndSupport>
 }
 
-export function ContactContentSection() {
+export function ContactContentSection({ contact }: ContactContentSectionProps) {
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  const address =
+    contact?.headquater_address ?? "Egbeda Local Government Secretariat"
+  const email = contact?.official_email ?? "egbedalocalgovernment@gmail.com"
+  const openingHours = [contact?.weekdays, contact?.hours]
+    .filter(Boolean)
+    .join(" · ")
+
+  /* National emergency numbers are fixed; the council's own lines come from settings. */
+  const emergencyLines = [
+    { label: "Oyo Emergency", value: "112" },
+    { label: "LASEMA Rapid Response", value: "767" },
+    { label: "Council Emergency Line", value: contact?.emergency_line_1 },
+    { label: "Alternate Council Line", value: contact?.emergency_line_2 },
+  ].filter((line) => Boolean(line.value))
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormData>({
     defaultValues: {
@@ -41,15 +64,27 @@ export function ContactContentSection() {
   })
 
   const onSubmit = async (data: ContactFormData) => {
-    // Simulate submission delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
-    console.log("Contact form submitted:", data)
+    setSubmitError(null)
+
+    // Posts through a Server Action, so the browser never calls the API host.
+    const result = await submitContactMessage(data)
+
+    if (!result.ok) {
+      for (const [field, message] of Object.entries(result.fieldErrors ?? {})) {
+        setError(field as keyof ContactFormData, { type: "server", message })
+      }
+
+      setSubmitError(result.message)
+
+      return
+    }
+
     setSubmitted(true)
     reset()
 
     setTimeout(() => {
       setSubmitted(false)
-    }, 5000)
+    }, 8000)
   }
 
   return (
@@ -70,7 +105,7 @@ export function ContactContentSection() {
                 Local Govt Secretariat
               </h3>
               <p className="mt-0.5 font-sans text-xs text-[#6A7181]">
-                Egbeda, Oyo State
+                {address}
               </p>
             </div>
           </div>
@@ -85,10 +120,14 @@ export function ContactContentSection() {
                 EMAIL
               </span>
               <h3 className="font-heading text-sm font-bold break-all text-[#131313] sm:text-base">
-                egbedalocalgovernment@gmail.com
+                <a href={`mailto:${email}`} className="hover:underline">
+                  {email}
+                </a>
               </h3>
               <p className="mt-0.5 font-sans text-xs text-[#6A7181]">
-                Send us an email through this address
+                {contact?.support_email
+                  ? `Support desk: ${contact.support_email}`
+                  : "Send us an email through this address"}
               </p>
             </div>
           </div>
@@ -103,7 +142,7 @@ export function ContactContentSection() {
                 HOURS
               </span>
               <h3 className="font-heading text-lg font-extrabold text-[#131313]">
-                Mon–Fri · 8am–4pm
+                {openingHours || "Mon–Fri · 8am–4pm"}
               </h3>
             </div>
           </div>
@@ -140,9 +179,23 @@ export function ContactContentSection() {
                     Thank you! Your message has been sent.
                   </p>
                   <p className="text-xs text-emerald-700">
-                    Our citizen service desk will respond within 24 hours.
+                    Our citizen service desk has received it and will be in
+                    touch.
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* Failure Banner */}
+            {submitError && (
+              <div
+                role="alert"
+                className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-xs text-red-800 sm:text-sm"
+              >
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                  <RiErrorWarningLine size={16} />
+                </div>
+                <p className="font-medium">{submitError}</p>
               </div>
             )}
 
@@ -157,6 +210,7 @@ export function ContactContentSection() {
                   </label>
                   <input
                     type="text"
+                    autoComplete="given-name"
                     placeholder="Enter your first name"
                     {...register("firstName", {
                       required: "First name is required",
@@ -177,6 +231,7 @@ export function ContactContentSection() {
                   </label>
                   <input
                     type="text"
+                    autoComplete="family-name"
                     placeholder="Enter your last name"
                     {...register("lastName", {
                       required: "Last name is required",
@@ -200,6 +255,7 @@ export function ContactContentSection() {
                   </label>
                   <input
                     type="email"
+                    autoComplete="email"
                     placeholder="johndoe@gmail.com"
                     {...register("email", {
                       required: "Email address is required",
@@ -222,14 +278,34 @@ export function ContactContentSection() {
                   <label className="text-xs font-bold text-[#131313]">
                     Phone Number<span className="text-[#7A1F33]">*</span>
                   </label>
-                  <input
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    {...register("phone", {
-                      required: "Phone number is required",
-                    })}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-xs transition-colors focus:border-[#7A1F33] focus:outline-none sm:text-sm"
-                  />
+                  <div
+                    className="phone-field"
+                    data-invalid={errors.phone ? "true" : "false"}
+                  >
+                    <Controller
+                      name="phone"
+                      control={control}
+                      rules={{
+                        required: "Phone number is required",
+                        validate: (value) =>
+                          isValidPhoneNumber(value ?? "") ||
+                          "Enter a valid phone number",
+                      }}
+                      render={({ field }) => (
+                        <PhoneInput
+                          {...field}
+                          // Nigeria is preselected, and the field takes the
+                          // national format residents actually type ("0801 234
+                          // 5678") while handing the form back E.164.
+                          defaultCountry="NG"
+                          autoComplete="tel"
+                          placeholder="801 234 5678"
+                          value={field.value ?? ""}
+                          onChange={(value) => field.onChange(value ?? "")}
+                        />
+                      )}
+                    />
+                  </div>
                   {errors.phone && (
                     <p className="text-[11px] font-medium text-red-500">
                       {errors.phone.message}
@@ -245,6 +321,7 @@ export function ContactContentSection() {
                 </label>
                 <input
                   type="text"
+                  autoComplete="off"
                   placeholder='Briefly describe the topic of your inquiry (e.g., "Service Request", "General Question")'
                   {...register("subject", { required: "Subject is required" })}
                   className="w-full rounded-xl border border-gray-200 px-4 py-3 text-xs transition-colors focus:border-[#7A1F33] focus:outline-none sm:text-sm"
@@ -280,22 +357,6 @@ export function ContactContentSection() {
                 )}
               </div>
 
-              {/* Attachment Dropzone */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#6A7181]">
-                  Attachment (optional)
-                </label>
-                <div className="cursor-pointer space-y-1 rounded-2xl border-2 border-dashed border-gray-200 bg-[#FAF8F9]/50 p-6 text-center transition-colors hover:border-[#7A1F33]">
-                  <RiUpload2Line size={24} className="mx-auto text-[#7A1F33]" />
-                  <p className="text-xs font-bold text-[#131313]">
-                    Click to upload or drag and drop
-                  </p>
-                  <p className="text-[11px] text-[#6A7181]">
-                    PDF, DOC, DOCX, or Images (Max 5MB per file, up to 5 files)
-                  </p>
-                </div>
-              </div>
-
               {/* Submit Button */}
               <div className="pt-2">
                 <button
@@ -319,33 +380,22 @@ export function ContactContentSection() {
               </span>
 
               <div className="space-y-4 divide-y divide-white/10 font-sans text-xs sm:text-sm">
-                <div className="flex items-center justify-between pt-1">
-                  <span className="font-medium">Oyo Emergency</span>
-                  <span className="text-sm font-bold text-[#D9A300] sm:text-base">
-                    112
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3">
-                  <span className="font-medium">LASEMA Rapid Response</span>
-                  <span className="text-sm font-bold text-[#D9A300] sm:text-base">
-                    767
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3">
-                  <span className="font-medium">Council Security Desk</span>
-                  <span className="text-sm font-bold text-[#D9A300] sm:text-base">
-                    +234 801 000 5678
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3">
-                  <span className="font-medium">Fire Service (Ibadan)</span>
-                  <span className="text-sm font-bold text-[#D9A300] sm:text-base">
-                    +234 807 111 4200
-                  </span>
-                </div>
+                {emergencyLines.map((line, index) => (
+                  <div
+                    key={line.label}
+                    className={`flex items-center justify-between gap-3 ${
+                      index === 0 ? "pt-1" : "pt-3"
+                    }`}
+                  >
+                    <span className="font-medium">{line.label}</span>
+                    <a
+                      href={`tel:${line.value}`}
+                      className="text-sm font-bold text-[#D9A300] hover:underline sm:text-base"
+                    >
+                      {line.value}
+                    </a>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -358,9 +408,18 @@ export function ContactContentSection() {
                 <h3 className="font-heading text-base font-extrabold text-[#131313]">
                   Council Secretariat
                 </h3>
-                <p className="font-sans text-xs text-[#6A7181]">
-                  Iwo Road, Egbeda, Ibadan, Oyo State.
-                </p>
+                <p className="font-sans text-xs text-[#6A7181]">{address}</p>
+                {contact?.google_map_link && (
+                  <a
+                    href={contact.google_map_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 pt-1 text-xs font-bold text-[#7A1F33] hover:underline"
+                  >
+                    <span>Open in Google Maps</span>
+                    <RiArrowRightLine size={14} />
+                  </a>
+                )}
               </div>
             </div>
           </div>

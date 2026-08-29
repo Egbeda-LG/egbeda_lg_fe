@@ -3,57 +3,19 @@ import Image from "next/image"
 import Link from "next/link"
 import { RiArrowRightLine } from "@remixicon/react"
 
-export function NewsSection() {
-  const featuredNews = {
-    category: "EVENT AND CEREMONIES",
-    date: "JAN 30, 2026",
-    title:
-      "Egbeda LG Chairman, Sanda Sikiru, Leads Vibrant Carnival Procession As Oyo State Celebrates 50th Anniversary",
-    excerpt:
-      "The streets of Ibadan came alive with color and music as the Executive Chairman of Egbeda Local Govt and Chairman of the Association of Local Government of Nigeria (ALGON) Oyo State chapter, Hon. Sanda Sikiru Oyedele LAJUE, led ...",
-    image: "/images/news-featured-carnival.jpg",
-    href: "/newsroom/egbeda-lg-chairman-sanda-sikiru-leads-vibrant-carnival-procession",
-  }
+import { newsApi, withFallback } from "@/lib/api"
+import { toNewsCards } from "@/modules/newsroom/newsroom.utils"
 
-  const newsList = [
-    {
-      category: "EDUCATION",
-      date: "FEB 18, 2026",
-      title:
-        "Anti-Cultism Campaign to Egbeda Schools, Free WAEC/JAMB Initiative",
-      excerpt:
-        "The administration of Hon. Sikiru Sanda, through Operation Campus Storm (O.C.S.), organized a comprehensive anti-cultism campaign.",
-      image: "/images/news-school-campaign.jpg",
-      href: "/newsroom",
-    },
-    {
-      category: "HEALTH",
-      date: "JAN 29, 2026",
-      title: "Hon. Sanda Leads Free Medical Outreach To Grassroots.",
-      excerpt:
-        "The Egbeda local govt organized a day free Medical Outreach to Grassroots held at Alakia/Olode Primary Health Care Centre and Alakia pr...",
-      image: "/images/news-medical-outreach.jpg",
-      href: "/newsroom",
-    },
-    {
-      category: "CASH EMPOWERMENT",
-      date: "FEB 26, 2026",
-      title: "Hon. Sanda Disburses Development Funds To CDA's,",
-      excerpt:
-        "The Executive Chairman of Egbeda Local Govt Hon Sikiru Oyedele has commenced the 2026...",
-      image: "/images/news-cda-funds.jpg",
-      href: "/newsroom",
-    },
-    {
-      category: "GRASSROOTS INFRASTRUCTURE",
-      date: "DEC 5, 2025",
-      title: "Hon. Sanda Flags Off Agoro Junction–Nigerian Breweries Road",
-      excerpt:
-        "Development in Egbeda Local Government has received another boost as the Executive Chairman, Hon. Sanda Oyedele Sikiru officially b...",
-      image: "/images/news-road-flagoff.jpg",
-      href: "/newsroom",
-    },
-  ]
+export async function NewsSection() {
+  const news = await withFallback(
+    () => newsApi.list({ limit: 5 }),
+    { items: [], meta: { page: 1, limit: 5, total: 0, totalPages: 0 } },
+    "landing news"
+  )
+
+  const [featuredNews, ...newsList] = toNewsCards(news.items)
+
+  if (!featuredNews) return null
 
   return (
     <section
@@ -98,7 +60,10 @@ export function NewsSection() {
         {/* Content Layout */}
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* Left Column: Featured News Card */}
-          <div className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-100/90 bg-white p-6 shadow-xs transition-all hover:shadow-md lg:col-span-6">
+          <Link
+            href={featuredNews.href}
+            className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-100/90 bg-white p-6 shadow-xs transition-all hover:shadow-md lg:col-span-6"
+          >
             <div>
               {/* Featured Image */}
               <div className="relative mb-6 h-64 w-full overflow-hidden rounded-xl bg-gray-100 sm:h-72">
@@ -115,7 +80,7 @@ export function NewsSection() {
               {/* Category & Date */}
               <div className="mb-2 flex items-center gap-2 text-xs">
                 <span className="text-[11px] font-extrabold tracking-wider text-[#7A1F33] uppercase">
-                  {featuredNews.category}
+                  {featuredNews.categoryLabel}
                 </span>
                 <span className="text-gray-300">•</span>
                 <span className="text-[11px] font-medium text-[#6A7181]">
@@ -136,21 +101,18 @@ export function NewsSection() {
 
             {/* Read More Link */}
             <div>
-              <Link
-                href={featuredNews.href}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7A1F33] transition-all group-hover:gap-2"
-              >
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7A1F33] transition-all group-hover:gap-2">
                 <span>Read more</span>
                 <RiArrowRightLine size={14} />
-              </Link>
+              </span>
             </div>
-          </div>
+          </Link>
 
           {/* Right Column: 4 Small News Items List */}
           <div className="space-y-6 lg:col-span-6">
-            {newsList.map((item, index) => (
+            {newsList.map((item) => (
               <Link
-                key={index}
+                key={item.id}
                 href={item.href}
                 className="group flex flex-col items-start gap-4 rounded-2xl border border-gray-100/90 bg-white p-4 shadow-xs transition-all hover:shadow-md sm:flex-row sm:items-center sm:gap-5 sm:p-5"
               >
@@ -170,7 +132,7 @@ export function NewsSection() {
                   {/* Category & Date */}
                   <div className="mb-1 flex items-center gap-2 text-xs">
                     <span className="text-[10px] font-extrabold tracking-wider text-[#7A1F33] uppercase">
-                      {item.category}
+                      {item.categoryLabel}
                     </span>
                     <span className="text-gray-300">•</span>
                     <span className="text-[10px] font-medium text-[#6A7181]">

@@ -193,8 +193,8 @@ export function Navbar() {
                     </div>
                   </Link>
 
-                  <a
-                    href="#nulge"
+                  <Link
+                    href="/government/nulge"
                     onClick={() => setGovOpen(false)}
                     className="group/item flex items-start gap-3"
                   >
@@ -207,7 +207,7 @@ export function Navbar() {
                         Local Government Workers Union
                       </span>
                     </div>
-                  </a>
+                  </Link>
 
                   <Link
                     href="/government/landmarks-and-culture"
@@ -220,7 +220,7 @@ export function Navbar() {
                         Landmark and Culture
                       </span>
                       <span className="mt-0.5 block font-sans text-xs leading-tight text-[#6A7181]">
-                        Local Government Workers Union
+                        Industry, markets and heritage sites
                       </span>
                     </div>
                   </Link>
@@ -355,8 +355,8 @@ export function Navbar() {
                   </div>
                 </Link>
 
-                <a
-                  href="#nulge"
+                <Link
+                  href="/government/nulge"
                   onClick={() => setMobileMenuOpen(false)}
                   className="group flex items-start gap-2"
                 >
@@ -369,7 +369,7 @@ export function Navbar() {
                       Local Government Workers Union
                     </span>
                   </div>
-                </a>
+                </Link>
 
                 <Link
                   href="/government/landmarks-and-culture"
@@ -382,7 +382,7 @@ export function Navbar() {
                       Landmark and Culture
                     </span>
                     <span className="block text-[11px] text-[#6A7181]">
-                      Local Government Workers Union
+                      Industry, markets and heritage sites
                     </span>
                   </div>
                 </Link>

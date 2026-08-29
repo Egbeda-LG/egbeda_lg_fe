@@ -1,7 +1,10 @@
 import Image, { ImageProps } from "next/image"
 import React from "react"
 
-export interface IconProps extends Omit<ImageProps, "src" | "alt" | "width" | "height"> {
+export interface IconProps extends Omit<
+  ImageProps,
+  "src" | "alt" | "width" | "height"
+> {
   size?: number
   width?: number
   height?: number

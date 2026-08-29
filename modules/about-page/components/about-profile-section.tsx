@@ -1,7 +1,42 @@
 import React from "react"
 import Image from "next/image"
 
-export function AboutProfileSection() {
+import { organizationSettingsApi, withFallback } from "@/lib/api"
+import { formatNumber, placementImage } from "@/lib/content"
+
+/** The council's own history text, kept as static copy until settings carry it. */
+const FALLBACK_PROFILE = [
+  "Egbeda Local Government, with headquarters at Egbeda, was carved out from the defunct Lagelu Local Government in 1989. The creation of Local Council Development Areas (LCDs) in Oyo State was approved on August 23rd, 2016 and signed into law on October 6, 2016 by former Governor Abiola Ajimobi.",
+  "This legislation created 35 LCDAs out of the existing 33 constitutionally recognized Local Government Areas (LGAs) to accelerate grassroots development, which Ajorosun LCDA was carved out from Egbeda Local Government. LCDAs were created to bring government closer to the people, they are essentially administrative outposts and do not receive direct funding from the Federation Account like the 33 statutory LGAs.",
+]
+
+export async function AboutProfileSection() {
+  const settings = await withFallback(
+    () => organizationSettingsApi.get(),
+    {},
+    "organization settings"
+  )
+
+  const organization = settings.organization
+
+  /* The chairman block further down takes the first "about" image. */
+  const photo =
+    placementImage(settings.chairman_info?.images, "about", 1) ??
+    "/images/about-profile-gate.jpg"
+
+  const paragraphs = organization?.about
+    ? organization.about
+        .split(/\n\s*\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+    : FALLBACK_PROFILE
+
+  const metrics = [
+    { value: organization?.year_of_establishment, label: "YEAR ESTABLISHED" },
+    { value: organization?.landmass_per_sq_km, label: "SQ KM LANDMASS" },
+    { value: organization?.no_of_wards, label: "WARDS" },
+  ].filter((metric) => typeof metric.value === "number")
+
   return (
     <section className="border-b border-gray-100 bg-[#FAF8F9] py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
@@ -20,66 +55,44 @@ export function AboutProfileSection() {
               A landscape of enterprise and heritage.
             </h2>
 
-            {/* Paragraph 1 */}
-            <p className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm">
-              Egbeda Local Government, with headquarters at Egbeda, was carved
-              out from the defunct Lagelu Local Government in 1989. The creation
-              of Local Council Development Areas (LCDs) in Oyo State was
-              approved on August 23rd, 2016 and signed into law on October 6,
-              2016 by former Governor Abiola Ajimobi.
-            </p>
+            {/* Profile copy */}
+            {paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm"
+              >
+                {paragraph}
+              </p>
+            ))}
 
-            {/* Paragraph 2 */}
-            <p className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm">
-              This legislation created 35 LCDAs out of the existing 33
-              constitutionally recognized Local Government Areas (LGAs) to
-              accelerate grassroots development, which Ajorosun LCDA was carved
-              out from Egbeda Local Government. LCDAs were created to bring
-              government closer to the people, they are essentially
-              administrative outposts and do not receive direct funding from the
-              Federation Account like the 33 statutory LGAs.
-            </p>
-
-            {/* 3 Metric Cards */}
-            <div className="grid grid-cols-3 gap-3 pt-4 sm:gap-4">
-              {/* Metric 1 */}
-              <div className="rounded-2xl border border-gray-100/90 bg-white/80 p-4 text-left shadow-2xs backdrop-blur-xs">
-                <div className="font-heading text-xl font-extrabold tracking-tight text-[#131313] sm:text-2xl">
-                  1989
-                </div>
-                <div className="mt-1 text-[10px] font-extrabold tracking-wider text-[#6A7181] uppercase">
-                  YEAR ESTABLISHED
-                </div>
+            {/* Metric Cards */}
+            {metrics.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 pt-4 sm:gap-4">
+                {metrics.map((metric) => (
+                  <div
+                    key={metric.label}
+                    className="rounded-2xl border border-gray-100/90 bg-white/80 p-4 text-left shadow-2xs backdrop-blur-xs"
+                  >
+                    <div className="font-heading text-xl font-extrabold tracking-tight text-[#131313] sm:text-2xl">
+                      {metric.label === "YEAR ESTABLISHED"
+                        ? metric.value
+                        : formatNumber(metric.value)}
+                    </div>
+                    <div className="mt-1 text-[10px] font-extrabold tracking-wider text-[#6A7181] uppercase">
+                      {metric.label}
+                    </div>
+                  </div>
+                ))}
               </div>
-
-              {/* Metric 2 */}
-              <div className="rounded-2xl border border-gray-100/90 bg-white/80 p-4 text-left shadow-2xs backdrop-blur-xs">
-                <div className="font-heading text-xl font-extrabold tracking-tight text-[#131313] sm:text-2xl">
-                  420.75
-                </div>
-                <div className="mt-1 text-[10px] font-extrabold tracking-wider text-[#6A7181] uppercase">
-                  SQ KM LANDMASS
-                </div>
-              </div>
-
-              {/* Metric 3 */}
-              <div className="rounded-2xl border border-gray-100/90 bg-white/80 p-4 text-left shadow-2xs backdrop-blur-xs">
-                <div className="font-heading text-xl font-extrabold tracking-tight text-[#131313] sm:text-2xl">
-                  11
-                </div>
-                <div className="mt-1 text-[10px] font-extrabold tracking-wider text-[#6A7181] uppercase">
-                  WARDS
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Right Column: Secretariat Gate & Building Image */}
           <div className="lg:col-span-6">
             <div className="relative mx-auto max-w-lg overflow-hidden rounded-3xl border border-gray-100 bg-gray-100 shadow-xl lg:max-w-none">
               <Image
-                src="/images/about-profile-gate.jpg"
-                alt="Egbeda Local Government Secretariat Main Entrance Gate and Building"
+                src={photo}
+                alt={`${organization?.official_name ?? "Egbeda Local Government"} secretariat`}
                 width={960}
                 height={1280}
                 className="h-auto max-h-[580px] w-full object-cover transition-transform duration-500 hover:scale-102"
