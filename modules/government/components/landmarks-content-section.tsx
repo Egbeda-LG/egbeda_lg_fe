@@ -1,6 +1,6 @@
 import React from "react"
 import Image from "next/image"
-import { RiMapPinLine } from "@remixicon/react"
+import { RiMapPinLine, RiPriceTag3Line } from "@remixicon/react"
 
 import {
   LANDMARK_CATEGORY_OPTIONS,
@@ -59,11 +59,6 @@ export function LandmarksContentSection({
               {/* Text Content */}
               <div className="flex h-full flex-col justify-between space-y-4 p-8 sm:p-10 lg:col-span-6 lg:p-12">
                 <div>
-                  {/* Category tag */}
-                  <span className="mb-2 block font-heading text-xs font-bold tracking-wider text-[#7A1F33] uppercase">
-                    {optionLabel(LANDMARK_CATEGORY_OPTIONS, item.category)}
-                  </span>
-
                   {/* Title */}
                   <h2 className="mb-3 font-heading text-2xl leading-snug font-extrabold text-[#131313] sm:text-3xl">
                     {item.name}
@@ -75,13 +70,21 @@ export function LandmarksContentSection({
                   </p>
                 </div>
 
-                {/* Location */}
-                {item.location && (
+                {/* Category and location */}
+                {(item.category || item.location) && (
                   <div className="flex flex-wrap items-center gap-2 border-t border-gray-100/80 pt-4">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#7A1F331A] bg-[#FAF0E6] px-3 py-1.5 text-[11px] font-semibold text-[#7A1F33]">
-                      <RiMapPinLine size={12} />
-                      {item.location}
-                    </span>
+                    {item.category && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#7A1F33] px-3 py-1.5 text-[11px] font-semibold text-white">
+                        <RiPriceTag3Line size={12} />
+                        {optionLabel(LANDMARK_CATEGORY_OPTIONS, item.category)}
+                      </span>
+                    )}
+                    {item.location && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#7A1F331A] bg-[#FAF0E6] px-3 py-1.5 text-[11px] font-semibold text-[#7A1F33]">
+                        <RiMapPinLine size={12} />
+                        {item.location}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
