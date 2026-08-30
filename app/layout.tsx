@@ -18,6 +18,8 @@ const DEFAULT_TITLE = `${SITE_NAME} | Official Website, Oyo State`
 const DEFAULT_DESCRIPTION =
   "The official website of Egbeda Local Government, Oyo State — citizen services, development projects, council news, and the officials serving all eleven wards."
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {

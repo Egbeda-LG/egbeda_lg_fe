@@ -30,62 +30,34 @@ const PUBLISHED = { status: "published" }
 /** Directory records use active/inactive rather than draft/published. */
 const ACTIVE = { status: "active" }
 
-/**
- * How long each resource stays fresh, in seconds, chosen by how often the
- * council actually edits it. These are the ceiling on how stale a page can be
- * *without* a revalidation ping; `POST /api/revalidate` clears a tag the moment
- * something is published, so in practice updates land immediately.
- */
-export const REVALIDATE = {
-  /** Announcements are the most time-sensitive thing on the site. */
-  news: 30,
-  projects: 60,
-  services: 60,
-  landmarks: 120,
-  /** Directory records change when someone is appointed or leaves. */
-  departments: 120,
-  councillors: 120,
-  management: 120,
-  nulge: 120,
-  /** Drives the top bar, footer and every statistic, so keep it current. */
-  organizationSettings: 60,
-  /** The roll of past officeholders grows once per term. */
-  pastGovernment: 3600,
-  /** Ward boundaries and the market register effectively never change. */
-  wards: 3600,
-  markets: 3600,
-  /** Admin inbox data - never cached, and never rendered publicly. */
-  messages: 0,
-} as const
-
 export const newsApi = createReadRepository<NewsItem, NewsStats>(
   "news",
   `${API_PREFIX}/news`,
-  { defaultQuery: PUBLISHED, revalidate: REVALIDATE.news }
+  { defaultQuery: PUBLISHED }
 )
 
 export const projectsApi = createReadRepository<ProjectItem, ProjectStats>(
   "projects",
   `${API_PREFIX}/projects`,
-  { defaultQuery: PUBLISHED, revalidate: REVALIDATE.projects }
+  { defaultQuery: PUBLISHED }
 )
 
 export const landmarksApi = createReadRepository<LandmarkItem>(
   "landmarks",
   `${API_PREFIX}/landmarks`,
-  { defaultQuery: PUBLISHED, revalidate: REVALIDATE.landmarks }
+  { defaultQuery: PUBLISHED }
 )
 
 export const servicesApi = createReadRepository<ServiceItem>(
   "services",
   `${API_PREFIX}/services`,
-  { defaultQuery: PUBLISHED, revalidate: REVALIDATE.services }
+  { defaultQuery: PUBLISHED }
 )
 
 export const departmentsApi = createReadRepository<DepartmentItem>(
   "departments",
   `${API_PREFIX}/departments`,
-  { defaultQuery: ACTIVE, revalidate: REVALIDATE.departments }
+  { defaultQuery: ACTIVE }
 )
 
 /**
@@ -94,20 +66,19 @@ export const departmentsApi = createReadRepository<DepartmentItem>(
  */
 export const councillorsApi = createReadRepository<CouncillorItem>(
   "councillors",
-  `${API_PREFIX}/councillors`,
-  { revalidate: REVALIDATE.councillors }
+  `${API_PREFIX}/councillors`
 )
 
 export const managementApi = createReadRepository<ManagementItem>(
   "management",
   `${API_PREFIX}/management`,
-  { defaultQuery: ACTIVE, revalidate: REVALIDATE.management }
+  { defaultQuery: ACTIVE }
 )
 
 export const nulgeApi = createReadRepository<NulgeItem>(
   "nulge",
   `${API_PREFIX}/nulge`,
-  { defaultQuery: ACTIVE, revalidate: REVALIDATE.nulge }
+  { defaultQuery: ACTIVE }
 )
 
 /**
@@ -116,8 +87,7 @@ export const nulgeApi = createReadRepository<NulgeItem>(
  */
 const messagesRepository = createReadRepository<ContactMessage>(
   "messages",
-  `${API_PREFIX}/messages`,
-  { revalidate: REVALIDATE.messages }
+  `${API_PREFIX}/messages`
 )
 
 /**
@@ -126,8 +96,7 @@ const messagesRepository = createReadRepository<ContactMessage>(
  */
 export const pastGovernmentApi = createReadRepository<PastGovernmentItem>(
   "past-government",
-  `${API_PREFIX}/past-government`,
-  { revalidate: REVALIDATE.pastGovernment }
+  `${API_PREFIX}/past-government`
 )
 
 /**
@@ -159,46 +128,25 @@ export const messagesApi = {
 export const wardsApi = {
   resource: "wards",
   path: `${API_PREFIX}/wards`,
-  tags: ["wards"],
-  list: (options: { revalidate?: number } = {}) =>
-    apiFetch<WardItem[]>(`${API_PREFIX}/wards`, {
-      tags: ["wards"],
-      revalidate: options.revalidate ?? REVALIDATE.wards,
-    }),
-  getById: (id: string, options: { revalidate?: number } = {}) =>
-    apiFetch<WardItem>(`${API_PREFIX}/wards/${id}`, {
-      tags: ["wards", `wards:${id}`],
-      revalidate: options.revalidate ?? REVALIDATE.wards,
-    }),
+  list: () => apiFetch<WardItem[]>(`${API_PREFIX}/wards`),
+  getById: (id: string) => apiFetch<WardItem>(`${API_PREFIX}/wards/${id}`),
 }
 
 /** `GET /markets` answers with a bare array, keyed by `market_number`. */
 export const marketsApi = {
   resource: "markets",
   path: `${API_PREFIX}/markets`,
-  tags: ["markets"],
-  list: (options: { revalidate?: number } = {}) =>
-    apiFetch<MarketItem[]>(`${API_PREFIX}/markets`, {
-      tags: ["markets"],
-      revalidate: options.revalidate ?? REVALIDATE.markets,
-    }),
-  getById: (marketNumber: string, options: { revalidate?: number } = {}) =>
-    apiFetch<MarketItem>(`${API_PREFIX}/markets/${marketNumber}`, {
-      tags: ["markets", `markets:${marketNumber}`],
-      revalidate: options.revalidate ?? REVALIDATE.markets,
-    }),
+  list: () => apiFetch<MarketItem[]>(`${API_PREFIX}/markets`),
+  getById: (marketNumber: string) =>
+    apiFetch<MarketItem>(`${API_PREFIX}/markets/${marketNumber}`),
 }
 
 /** `GET /organization-settings` answers with the single settings document. */
 export const organizationSettingsApi = {
   resource: "organization-settings",
   path: `${API_PREFIX}/organization-settings`,
-  tags: ["organization-settings"],
-  get: (options: { revalidate?: number } = {}) =>
-    apiFetch<OrganizationSettings>(`${API_PREFIX}/organization-settings`, {
-      tags: ["organization-settings"],
-      revalidate: options.revalidate ?? REVALIDATE.organizationSettings,
-    }),
+  get: () =>
+    apiFetch<OrganizationSettings>(`${API_PREFIX}/organization-settings`),
 }
 
 /**

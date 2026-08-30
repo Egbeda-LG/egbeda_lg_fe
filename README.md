@@ -23,7 +23,6 @@ The site runs at [http://localhost:3000](http://localhost:3000).
 | -------------------------- | -------------------------------------------------------------- |
 | `NEXT_PUBLIC_API_BASE_URL` | Egbeda LG backend root, without the `/api/v1` prefix           |
 | `NEXT_PUBLIC_SITE_URL`     | Public origin, used for canonicals, Open Graph and the sitemap |
-| `REVALIDATE_SECRET`        | Shared secret for `POST /api/revalidate` (server-only)         |
 
 `NEXT_PUBLIC_API_BASE_URL` defaults to the dev API
 (`https://egbeda-api-dev.jumpingcrab.com`). `NEXT_PUBLIC_SITE_URL` defaults to
@@ -122,36 +121,9 @@ its empty state rather than failing the page. Detail routes address records as
 
 ### Caching and revalidation
 
-Every read is cached and tagged with its resource name. `REVALIDATE` in
-`lib/api/resources.ts` sets how long each one stays fresh on its own:
-
-| Resource                                                         | Window   |
-| ---------------------------------------------------------------- | -------- |
-| `news`                                                           | 30s      |
-| `projects`, `services`, `organization-settings`                  | 60s      |
-| `landmarks`, `departments`, `councillors`, `management`, `nulge` | 120s     |
-| `wards`, `markets`                                               | 1 hour   |
-| `messages`                                                       | uncached |
-
-Those windows are only the ceiling. `POST /api/revalidate` clears a tag
-immediately, so an edit in the admin app goes live on the next request rather
-than at the end of the window:
-
-```bash
-curl -X POST https://<site>/api/revalidate \
-  -H "x-revalidate-secret: $REVALIDATE_SECRET" \
-  -H "content-type: application/json" \
-  -d '{"tags":["news"]}'
-```
-
-- `tag` (one) or `tags` (several); `{"tags":["*"]}` clears everything
-- `GET /api/revalidate` reports whether the secret is configured and lists the
-  valid tags
-- Returns 401 on a bad secret and 503 when `REVALIDATE_SECRET` is unset — it
-  never runs unauthenticated, since an open hook lets anyone stampede the API
-
-Because the top bar, footer and statistics all read organisation settings, the
-`organization-settings` tag refreshes every page on the site.
+Public API reads use `cache: "no-store"`, and the root layout is dynamically
+rendered. Every page request therefore reads current backend data instead of
+waiting for a cache window or a separate invalidation webhook.
 
 Server-side fetches never appear in the browser's network tab. `next.config.ts`
 enables `logging.fetches`, so each one prints in the `pnpm dev` terminal — and

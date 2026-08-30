@@ -30,10 +30,9 @@ export function toPaginationMeta(
 type RepositoryOptions = {
   /** Merged under every list query - e.g. only published records. */
   defaultQuery?: ListQuery
-  revalidate?: number
 }
 
-type ReadOptions = Pick<FetchOptions, "revalidate" | "signal">
+type ReadOptions = Pick<FetchOptions, "signal">
 
 /**
  * Read-only counterpart to the admin app's `createResourceRepository`. The
@@ -42,10 +41,8 @@ type ReadOptions = Pick<FetchOptions, "revalidate" | "signal">
 export function createReadRepository<TItem, TStats = never>(
   resource: string,
   path: string,
-  { defaultQuery, revalidate }: RepositoryOptions = {}
+  { defaultQuery }: RepositoryOptions = {}
 ) {
-  const tags = [resource]
-
   async function list(
     query: ListQuery = {},
     options: ReadOptions = {}
@@ -54,8 +51,6 @@ export function createReadRepository<TItem, TStats = never>(
 
     const response = await apiFetch<PaginatedResponse<TItem, TStats>>(path, {
       params,
-      tags,
-      revalidate: options.revalidate ?? revalidate,
       signal: options.signal,
     })
 
@@ -68,8 +63,6 @@ export function createReadRepository<TItem, TStats = never>(
 
   async function getById(id: string, options: ReadOptions = {}) {
     return apiFetch<TItem>(`${path}/${id}`, {
-      tags: [...tags, `${resource}:${id}`],
-      revalidate: options.revalidate ?? revalidate,
       signal: options.signal,
     })
   }
@@ -84,5 +77,5 @@ export function createReadRepository<TItem, TStats = never>(
     }
   }
 
-  return { resource, path, tags, list, getById, findById }
+  return { resource, path, list, getById, findById }
 }
