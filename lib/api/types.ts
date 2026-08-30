@@ -74,14 +74,12 @@ export type WardItem = {
   name: string
 }
 
-/**
- * `GET /past-government` — one officeholder, recorded by the date their term
- * began. The API stores no end date; a term runs until the next one starts.
- */
+/** `GET /past-government` — one officeholder with a display period. */
 export type PastGovernmentItem = Timestamps & {
   _id?: string
   name: string
-  date: { year: number; month?: number; day?: number }
+  date: string
+  sort_order: number
   /** elected | caretaker | sole_administrator */
   election_type: string
 }
