@@ -19,6 +19,7 @@ export {
   pastGovernmentApi,
   projectsApi,
   servicesApi,
+  uploadsApi,
   wardsApi,
   withFallback,
 } from "@/lib/api/resources"

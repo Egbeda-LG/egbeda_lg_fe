@@ -208,6 +208,31 @@ no-op; nothing throws.
 | `organization-settings` | Top bar, footer, about, contact, stats, chairman blocks   |
 | `messages`              | Contact form writes via `POST`; reads need an admin token |
 
+### Contact form attachments
+
+Residents can attach a photo to a message, but only when `EGBEDA_API_TOKEN` is
+set. `POST /uploads/presigned-url` is admin-authenticated, so without a token
+this site cannot obtain an upload URL — and rather than showing a control that
+always fails, the attachment field is not rendered at all.
+
+The flow, once enabled: the browser asks a Server Action for a one-time URL,
+`PUT`s the file straight to S3, and sends only the resulting URL with the
+message. The image never passes through this app.
+
+Two caveats worth knowing before turning it on:
+
+- **The token is an admin credential.** Anything holding it can write to every
+  resource on the API, not just uploads. The safer fix is a public endpoint on
+  the backend that issues presigned URLs scoped to the `messages` folder, with
+  rate limiting and a content-type allowlist; this site would then need no
+  token at all.
+- **S3 must allow a browser `PUT`** from the site's origin. That CORS rule is
+  set on the bucket, not here.
+
+`photo_url` is checked server-side against the council's own bucket host. The
+API accepts any URL in that field, so without the check the form would let
+anyone put an arbitrary link in front of staff reading the inbox.
+
 ## SEO
 
 `lib/seo.tsx` centralises the pieces every page needs:

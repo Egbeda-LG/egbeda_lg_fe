@@ -13,6 +13,8 @@ import type {
   NewsStats,
   NulgeItem,
   PastGovernmentItem,
+  PresignedUploadPayload,
+  PresignedUploadResponse,
   OrganizationSettings,
   ProjectItem,
   ProjectStats,
@@ -127,6 +129,21 @@ export const pastGovernmentApi = createReadRepository<PastGovernmentItem>(
   `${API_PREFIX}/past-government`,
   { revalidate: REVALIDATE.pastGovernment }
 )
+
+/**
+ * Presigned S3 uploads. The endpoint is admin-authenticated, so the public site
+ * can only reach it when EGBEDA_API_TOKEN is configured - see
+ * `uploadsEnabled()` in the contact module.
+ */
+export const uploadsApi = {
+  resource: "uploads",
+  createPresignedUrl: (payload: PresignedUploadPayload, token: string) =>
+    apiPost<PresignedUploadResponse>(
+      `${API_PREFIX}/uploads/presigned-url`,
+      payload,
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+}
 
 export const messagesApi = {
   ...messagesRepository,

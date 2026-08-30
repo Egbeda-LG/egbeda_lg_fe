@@ -204,6 +204,20 @@ export type ContactMessage = Timestamps & {
   photo_url?: string
 }
 
+/** Body accepted by `POST /uploads/presigned-url`. */
+export type PresignedUploadPayload = {
+  file_name: string
+  content_type: string
+  folder: string
+}
+
+export type PresignedUploadResponse = {
+  upload_url: string
+  file_url: string
+  key: string
+  expires_in: number
+}
+
 /** Body accepted by `POST /messages`. `phone` and `photo_url` are optional. */
 export type ContactMessagePayload = {
   first_name: string

@@ -2,7 +2,77 @@
 
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js"
 
-import { ApiError, messagesApi, type ContactMessagePayload } from "@/lib/api"
+import {
+  ApiError,
+  getApiErrorMessage,
+  messagesApi,
+  uploadsApi,
+  type ContactMessagePayload,
+} from "@/lib/api"
+import {
+  ATTACHMENT_CONTENT_TYPES,
+  UPLOAD_HOST,
+} from "@/modules/contact/contact.constants"
+
+/**
+ * `POST /uploads/presigned-url` is admin-authenticated, so residents can only
+ * attach a photo when the council has given this site a token to present.
+ * Without one the form hides the control rather than offering an upload that
+ * cannot succeed.
+ */
+export async function uploadsEnabled() {
+  return Boolean(process.env.EGBEDA_API_TOKEN)
+}
+
+export type AttachmentUpload =
+  | { ok: true; uploadUrl: string; fileUrl: string }
+  | { ok: false; message: string }
+
+/**
+ * Hands the browser a one-time URL to PUT the photo straight to S3, plus the
+ * public URL to store on the message.
+ */
+export async function createAttachmentUpload(
+  fileName: string,
+  contentType: string
+): Promise<AttachmentUpload> {
+  const token = process.env.EGBEDA_API_TOKEN
+
+  if (!token) {
+    return { ok: false, message: "Attachments are not available right now." }
+  }
+
+  if (!ATTACHMENT_CONTENT_TYPES.includes(contentType as never)) {
+    return { ok: false, message: "Attach a JPG, PNG or WebP image." }
+  }
+
+  try {
+    const presigned = await uploadsApi.createPresignedUrl(
+      {
+        file_name: fileName,
+        content_type: contentType,
+        folder: "messages",
+      },
+      token
+    )
+
+    return {
+      ok: true,
+      uploadUrl: presigned.upload_url,
+      fileUrl: presigned.file_url,
+    }
+  } catch (error) {
+    console.error(
+      "[contact] presigned upload failed:",
+      getApiErrorMessage(error)
+    )
+
+    return {
+      ok: false,
+      message: "We could not prepare the upload. Please try again.",
+    }
+  }
+}
 
 export type ContactFormValues = {
   firstName: string
@@ -11,6 +81,8 @@ export type ContactFormValues = {
   phone: string
   subject: string
   message: string
+  /** Public URL of an uploaded photo, when the resident attached one. */
+  photoUrl?: string
 }
 
 export type ContactFormResult =
@@ -66,6 +138,27 @@ function validate(values: ContactFormValues) {
     fieldErrors.phone = "Enter a valid phone number"
   }
 
+  /*
+   * The API accepts any URL here, so the host is pinned to the council's own
+   * bucket. Otherwise the form would let anyone put an arbitrary link in front
+   * of staff reading the inbox.
+   */
+  const photoUrl = values.photoUrl?.trim()
+
+  if (photoUrl) {
+    let host: string | undefined
+
+    try {
+      host = new URL(photoUrl).host
+    } catch {
+      host = undefined
+    }
+
+    if (host !== UPLOAD_HOST) {
+      fieldErrors.photoUrl = "That attachment could not be verified."
+    }
+  }
+
   return fieldErrors
 }
 
@@ -103,6 +196,10 @@ export async function submitContactMessage(
   const phone = values.phone.trim()
 
   payload.phone = parsePhoneNumber(phone, "NG")?.number ?? phone
+
+  const photoUrl = values.photoUrl?.trim()
+
+  if (photoUrl) payload.photo_url = photoUrl
 
   try {
     await messagesApi.create(payload)

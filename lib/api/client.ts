@@ -171,7 +171,7 @@ function readErrorMessage(payload: unknown) {
 export async function apiPost<T>(
   path: string,
   body: unknown,
-  options: { signal?: AbortSignal } = {}
+  options: { signal?: AbortSignal; headers?: Record<string, string> } = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${path}`
   const startedAt = Date.now()
@@ -184,6 +184,7 @@ export async function apiPost<T>(
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        ...options.headers,
       },
       body: JSON.stringify(body),
       signal: options.signal,
