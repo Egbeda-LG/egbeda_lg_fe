@@ -3,6 +3,10 @@ import { ContactHeroSection } from "./components/contact-hero-section"
 import { FadeIn } from "@/components/fade-in"
 import { organizationSettingsApi, withFallback } from "@/lib/api"
 import { uploadsEnabled } from "@/modules/contact/contact.actions"
+import {
+  ATTACHMENT_CONTENT_TYPES,
+  ATTACHMENT_MAX_BYTES,
+} from "@/modules/contact/contact.constants"
 
 export async function ContactPage() {
   const [settings, attachmentsEnabled] = await Promise.all([
@@ -23,6 +27,8 @@ export async function ContactPage() {
         <ContactContentSection
           contact={settings.contact_and_support}
           attachmentsEnabled={attachmentsEnabled}
+          attachmentContentTypes={ATTACHMENT_CONTENT_TYPES}
+          attachmentMaxBytes={ATTACHMENT_MAX_BYTES}
         />
       </FadeIn>
     </main>

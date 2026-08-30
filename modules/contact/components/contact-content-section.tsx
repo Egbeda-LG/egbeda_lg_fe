@@ -21,10 +21,6 @@ import {
   submitContactMessage,
   type ContactFormValues,
 } from "@/modules/contact/contact.actions"
-import {
-  ATTACHMENT_CONTENT_TYPES,
-  ATTACHMENT_MAX_BYTES,
-} from "@/modules/contact/contact.constants"
 
 export type ContactFormData = ContactFormValues
 
@@ -33,11 +29,23 @@ interface ContactContentSectionProps {
   contact?: Partial<ContactAndSupport>
   /** False when the council has not enabled resident uploads. */
   attachmentsEnabled?: boolean
+  /**
+   * The upload rules, handed down by the server rather than imported here.
+   *
+   * The Server Action enforces the same two values, and a `"use server"` module
+   * may only export async functions. When both sides imported them from one
+   * module, the bundler folded that module into the action and re-exported the
+   * constants from it, which fails that rule at runtime.
+   */
+  attachmentContentTypes: readonly string[]
+  attachmentMaxBytes: number
 }
 
 export function ContactContentSection({
   contact,
   attachmentsEnabled = false,
+  attachmentContentTypes,
+  attachmentMaxBytes,
 }: ContactContentSectionProps) {
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -71,13 +79,15 @@ export function ContactContentSection({
       return
     }
 
-    if (!ATTACHMENT_CONTENT_TYPES.includes(file.type as never)) {
+    if (!attachmentContentTypes.includes(file.type)) {
       setAttachmentError("Attach a JPG, PNG or WebP image.")
       return
     }
 
-    if (file.size > ATTACHMENT_MAX_BYTES) {
-      setAttachmentError("That image is larger than 5MB.")
+    if (file.size > attachmentMaxBytes) {
+      setAttachmentError(
+        `That image is larger than ${Math.round(attachmentMaxBytes / 1024 / 1024)}MB.`
+      )
       return
     }
 
@@ -503,7 +513,7 @@ export function ContactContentSection({
                       <input
                         key={fileInputKey}
                         type="file"
-                        accept={ATTACHMENT_CONTENT_TYPES.join(",")}
+                        accept={attachmentContentTypes.join(",")}
                         className="sr-only"
                         onChange={(event) =>
                           chooseAttachment(event.target.files?.[0] ?? null)

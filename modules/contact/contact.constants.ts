@@ -1,8 +1,11 @@
 /**
- * Shared between the form and its Server Actions.
+ * The upload rules, enforced by the Server Action and handed to the form as
+ * props by the contact page.
  *
- * These live outside `contact.actions.ts` because a `"use server"` module may
- * only export async functions — a constant there fails the build.
+ * Imported only by server modules. A `"use server"` file may export nothing but
+ * async functions, and when the client imported these from here too, the
+ * bundler folded this module into `contact.actions.ts` and re-exported them
+ * from it - breaking that rule at runtime.
  */
 
 /** Attachments are photographs of the problem being reported. */
