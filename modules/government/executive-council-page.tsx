@@ -31,6 +31,7 @@ export async function ExecutiveCouncilPage() {
       <FadeIn>
         <ExecutiveCouncilContentSection
           chairman={settings.chairman_info}
+          viceChairman={settings.vice_chairman_info}
           councillors={toCouncillorRows(councillors.items)}
         />
       </FadeIn>

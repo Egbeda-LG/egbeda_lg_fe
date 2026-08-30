@@ -10,45 +10,41 @@ type CouncillorRow = ReturnType<typeof toCouncillorRows>[number]
 
 interface ExecutiveCouncilContentSectionProps {
   chairman?: Partial<ChairmanInfo>
+  viceChairman?: Partial<ChairmanInfo>
   councillors: CouncillorRow[]
 }
 
 export function ExecutiveCouncilContentSection({
   chairman,
+  viceChairman,
   councillors,
 }: ExecutiveCouncilContentSectionProps) {
-  const chairmanPhoto =
-    placementImage(chairman?.images, "government") ??
-    "/images/executive-chairman.png"
+  /* The vice chairman's seat can be unfilled, so the row adapts to one card. */
+  const hasViceChairman = Boolean(viceChairman?.official_name)
 
   return (
     <section className="border-b border-gray-100 bg-[#FAF8F9] py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
-        {/* Executive Chairman Card */}
-        <div className="mx-auto mb-16 max-w-md">
-          <div className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100/90 bg-white shadow-xs transition-all duration-300 hover:shadow-md">
-            <div className="relative flex h-72 w-full items-center justify-center overflow-hidden bg-[#131313] sm:h-80">
-              <Image
-                src={chairmanPhoto}
-                alt={`${chairman?.official_name ?? "Executive Chairman"} — Executive Chairman, Egbeda Local Government`}
-                fill
-                sizes="(max-width: 768px) 100vw, 400px"
-                className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                priority
-              />
-            </div>
+        {/* Leadership Cards */}
+        <div
+          className={`mx-auto mb-16 grid grid-cols-1 gap-8 ${
+            hasViceChairman ? "max-w-4xl md:grid-cols-2" : "max-w-md"
+          }`}
+        >
+          <LeadershipCard
+            person={chairman}
+            role="Executive Chairman Egbeda L/G"
+            fallbackName="Executive Chairman"
+            priority
+          />
 
-            <div className="flex flex-col items-center space-y-2 p-6 text-center">
-              <h2 className="font-heading text-lg leading-snug font-extrabold text-[#131313] sm:text-xl">
-                {chairman?.official_name ?? "Executive Chairman"}
-              </h2>
-              <div className="font-heading text-xs font-bold tracking-wider text-[#D9A300] uppercase">
-                Executive Chairman Egbeda L/G
-              </div>
-
-              <SocialLinks links={chairman?.social_media} className="pt-3" />
-            </div>
-          </div>
+          {hasViceChairman && (
+            <LeadershipCard
+              person={viceChairman}
+              role="Vice Chairman Egbeda L/G"
+              fallbackName="Vice Chairman"
+            />
+          )}
         </div>
 
         {/* Councillors Table Container */}
@@ -111,5 +107,56 @@ export function ExecutiveCouncilContentSection({
         </div>
       </div>
     </section>
+  )
+}
+
+function LeadershipCard({
+  person,
+  role,
+  fallbackName,
+  priority = false,
+}: {
+  person?: Partial<ChairmanInfo>
+  role: string
+  fallbackName: string
+  priority?: boolean
+}) {
+  const name = person?.official_name ?? fallbackName
+  const photo = placementImage(person?.images, "government")
+
+  return (
+    <div className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100/90 bg-white shadow-xs transition-all duration-300 hover:shadow-md">
+      <div className="relative flex h-72 w-full items-center justify-center overflow-hidden bg-[#131313] sm:h-80">
+        {photo ? (
+          <Image
+            src={photo}
+            alt={`${name} — ${role}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
+          />
+        ) : (
+          /* Silhouette stand-in until a portrait is flagged for this page */
+          <div className="flex h-full w-full items-end justify-center bg-[#D4DFE2] pt-8">
+            <div className="flex h-48 w-48 flex-col items-center justify-end">
+              <div className="mb-2 h-24 w-24 rounded-full bg-white shadow-2xs" />
+              <div className="h-20 w-40 rounded-t-full bg-white shadow-2xs" />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col items-center space-y-2 p-6 text-center">
+        <h2 className="font-heading text-lg leading-snug font-extrabold text-[#131313] sm:text-xl">
+          {name}
+        </h2>
+        <div className="font-heading text-xs font-bold tracking-wider text-[#D9A300] uppercase">
+          {role}
+        </div>
+
+        <SocialLinks links={person?.social_media} className="pt-3" />
+      </div>
+    </div>
   )
 }
