@@ -202,6 +202,7 @@ no-op; nothing throws.
 | `councillors`           | `/government/executive-council`                           |
 | `management`            | `/government/management-team`                             |
 | `nulge`                 | `/government/nulge`                                       |
+| `past-government`       | `/about` past chairmen roll                               |
 | `wards`                 | Communities section, project ward filter                  |
 | `markets`               | Communities section                                       |
 | `organization-settings` | Top bar, footer, about, contact, stats, chairman blocks   |

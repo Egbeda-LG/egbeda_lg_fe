@@ -18,6 +18,7 @@ const KNOWN_TAGS = [
   "wards",
   "markets",
   "organization-settings",
+  "past-government",
 ] as const
 
 type KnownTag = (typeof KNOWN_TAGS)[number]

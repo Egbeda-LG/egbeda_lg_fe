@@ -16,6 +16,7 @@ export {
   newsApi,
   nulgeApi,
   organizationSettingsApi,
+  pastGovernmentApi,
   projectsApi,
   servicesApi,
   wardsApi,

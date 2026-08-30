@@ -12,6 +12,7 @@ import type {
   NewsItem,
   NewsStats,
   NulgeItem,
+  PastGovernmentItem,
   OrganizationSettings,
   ProjectItem,
   ProjectStats,
@@ -46,6 +47,8 @@ export const REVALIDATE = {
   nulge: 120,
   /** Drives the top bar, footer and every statistic, so keep it current. */
   organizationSettings: 60,
+  /** The roll of past officeholders grows once per term. */
+  pastGovernment: 3600,
   /** Ward boundaries and the market register effectively never change. */
   wards: 3600,
   markets: 3600,
@@ -113,6 +116,16 @@ const messagesRepository = createReadRepository<ContactMessage>(
   "messages",
   `${API_PREFIX}/messages`,
   { revalidate: REVALIDATE.messages }
+)
+
+/**
+ * The roll of former chairmen and administrators. Paginated, unlike wards and
+ * markets, and its meta carries has_next_page/has_previous_page.
+ */
+export const pastGovernmentApi = createReadRepository<PastGovernmentItem>(
+  "past-government",
+  `${API_PREFIX}/past-government`,
+  { revalidate: REVALIDATE.pastGovernment }
 )
 
 export const messagesApi = {

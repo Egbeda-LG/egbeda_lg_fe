@@ -74,6 +74,18 @@ export type WardItem = {
   name: string
 }
 
+/**
+ * `GET /past-government` — one officeholder, recorded by the date their term
+ * began. The API stores no end date; a term runs until the next one starts.
+ */
+export type PastGovernmentItem = Timestamps & {
+  _id?: string
+  name: string
+  date: { year: number; month?: number; day?: number }
+  /** elected | caretaker | sole_administrator */
+  election_type: string
+}
+
 /** `GET /markets` — a council-managed market, keyed by `market_number`. */
 export type MarketItem = {
   market_number: string
@@ -252,6 +264,7 @@ export type OrganizationSettings = Timestamps & {
   _id?: string
   organization?: Partial<OrganizationDetails>
   chairman_info?: Partial<ChairmanInfo>
+  vice_chairman_info?: Partial<ChairmanInfo>
   contact_and_support?: Partial<ContactAndSupport>
   social_media?: SocialMediaLink[]
 }
