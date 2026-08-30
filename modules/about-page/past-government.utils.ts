@@ -15,14 +15,14 @@ export type PastOfficeholder = {
 export function toPastOfficeholders(
   items: PastGovernmentItem[] = []
 ): PastOfficeholder[] {
-  const ordered = [...items].sort(
-    (a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0)
-  )
+  const ordered = items
+    .filter((item) => typeof item.date === "string")
+    .sort((a, b) => b.sort_order - a.sort_order)
 
   return ordered.map((item, index) => ({
-    id: item._id ?? `${item.name}-${item.sort_order ?? index}`,
+    id: item._id ?? `${item.name}-${item.sort_order || index}`,
     name: item.name,
-    period: item.date?.trim() || "—",
+    period: item.date.trim() || "—",
     typeLabel: optionLabel(ELECTION_TYPE_OPTIONS, item.election_type),
   }))
 }

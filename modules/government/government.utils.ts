@@ -20,23 +20,20 @@ export type OfficialCard = {
   isVacant: boolean
 }
 
-/** Councillors are listed by ward, lowest ward number first. */
 export function toCouncillorRows(councillors: CouncillorItem[] = []) {
-  return councillors
-    .map((councillor) => ({
-      id: councillor._id,
-      name: councillor.name,
-      role: "Councillor",
-      ward: councillor.ward?.ward_number
-        ? `Ward ${councillor.ward.ward_number}`
-        : "—",
-      wardNumber: councillor.ward?.ward_number ?? "",
-      area: councillor.ward?.name ?? "—",
-      photo: placementImage(councillor.images, "government"),
-      social: councillor.social_media ?? [],
-      isVacant: councillor.status?.toLowerCase() === "vacant",
-    }))
-    .sort((a, b) => a.wardNumber.localeCompare(b.wardNumber))
+  return councillors.map((councillor) => ({
+    id: councillor._id,
+    name: councillor.name,
+    role: "Councillor",
+    ward: councillor.ward?.ward_number
+      ? `Ward ${councillor.ward.ward_number}`
+      : "—",
+    wardNumber: councillor.ward?.ward_number ?? "",
+    area: councillor.ward?.name ?? "—",
+    photo: placementImage(councillor.images, "government"),
+    social: councillor.social_media ?? [],
+    isVacant: councillor.status?.toLowerCase() === "vacant",
+  }))
 }
 
 export function toManagementCard(item: ManagementItem): OfficialCard {
@@ -62,16 +59,3 @@ export function toNulgeCard(item: NulgeItem): OfficialCard {
   }
 }
 
-/** Keeps the union executives in their constitutional order of office. */
-export function sortByOffice<T extends { office: string }>(
-  items: T[],
-  order: { value: string }[]
-) {
-  const rank = new Map(order.map((option, index) => [option.value, index]))
-
-  return [...items].sort(
-    (a, b) =>
-      (rank.get(a.office) ?? Number.MAX_SAFE_INTEGER) -
-      (rank.get(b.office) ?? Number.MAX_SAFE_INTEGER)
-  )
-}

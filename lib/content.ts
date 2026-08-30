@@ -135,6 +135,7 @@ type PlacementCandidate = {
   is_in_homepage: boolean
   is_in_government: boolean
   is_in_about: boolean
+  is_in_lower_home: boolean
 }
 
 /**
@@ -146,7 +147,7 @@ type PlacementCandidate = {
  */
 export function placementImages(
   images: PlacementCandidate[] | undefined,
-  placement: "homepage" | "government" | "about"
+  placement: "homepage" | "government" | "about" | "lower_home"
 ): string[] {
   if (!images?.length) return []
 
@@ -164,7 +165,7 @@ export function placementImages(
  */
 export function placementImage(
   images: PlacementCandidate[] | undefined,
-  placement: "homepage" | "government" | "about",
+  placement: "homepage" | "government" | "about" | "lower_home",
   index = 0
 ) {
   const available = placementImages(images, placement)

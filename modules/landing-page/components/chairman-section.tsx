@@ -15,7 +15,7 @@ export async function ChairmanSection() {
 
   const chairman = settings.chairman_info
   const photo =
-    placementImage(chairman?.images, "homepage") ??
+    placementImage(chairman?.images, "lower_home") ??
     "/images/executive-chairman.png"
 
   /* The chairman's address to residents; blank lines become paragraphs. */

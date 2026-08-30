@@ -1,15 +1,8 @@
 import { ManagementTeamHeroSection } from "./components/management-team-hero-section"
 import { ManagementTeamSection } from "./components/management-team-section"
 import { FadeIn } from "@/components/fade-in"
-import {
-  MANAGEMENT_OFFICE_OPTIONS,
-  managementApi,
-  withFallback,
-} from "@/lib/api"
-import {
-  sortByOffice,
-  toManagementCard,
-} from "@/modules/government/government.utils"
+import { managementApi, withFallback } from "@/lib/api"
+import { toManagementCard } from "@/modules/government/government.utils"
 
 export async function ManagementTeamPage() {
   const management = await withFallback(
@@ -25,10 +18,7 @@ export async function ManagementTeamPage() {
       </FadeIn>
       <FadeIn>
         <ManagementTeamSection
-          officials={sortByOffice(
-            management.items,
-            MANAGEMENT_OFFICE_OPTIONS
-          ).map(toManagementCard)}
+          officials={management.items.map(toManagementCard)}
         />
       </FadeIn>
     </main>

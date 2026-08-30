@@ -61,6 +61,7 @@ export type PlacementImage = {
   is_in_homepage: boolean
   is_in_government: boolean
   is_in_about: boolean
+  is_in_lower_home: boolean
 }
 
 export type Timestamps = {

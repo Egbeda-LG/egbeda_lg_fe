@@ -1,11 +1,8 @@
 import { NulgeContentSection } from "./components/nulge-content-section"
 import { NulgeHeroSection } from "./components/nulge-hero-section"
 import { FadeIn } from "@/components/fade-in"
-import { NULGE_OFFICE_OPTIONS, nulgeApi, withFallback } from "@/lib/api"
-import {
-  sortByOffice,
-  toNulgeCard,
-} from "@/modules/government/government.utils"
+import { nulgeApi, withFallback } from "@/lib/api"
+import { toNulgeCard } from "@/modules/government/government.utils"
 
 export async function NulgePage() {
   /*
@@ -18,9 +15,7 @@ export async function NulgePage() {
     "NULGE list"
   )
 
-  const officers = sortByOffice(nulge.items, NULGE_OFFICE_OPTIONS).map(
-    toNulgeCard
-  )
+  const officers = nulge.items.map(toNulgeCard)
 
   return (
     <main className="min-h-screen">
