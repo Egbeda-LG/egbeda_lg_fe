@@ -96,7 +96,7 @@ export async function AboutPastChairmenSection() {
                     <span className="mb-0.5 block text-[11px] font-extrabold tracking-wider text-[#7A1F33] uppercase">
                       {item.period}
                     </span>
-                    <h3 className="font-heading text-xs leading-snug font-extrabold text-[#131313] transition-colors group-hover:text-[#7A1F33] sm:text-sm">
+                    <h3 className="font-heading text-xs leading-snug font-extrabold text-[#131313] uppercase transition-colors group-hover:text-[#7A1F33] sm:text-sm">
                       {item.name}
                     </h3>
                     {item.typeLabel && (
