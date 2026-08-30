@@ -40,24 +40,24 @@ export function AnthemSection() {
     >
       {/* Warm wash behind the verses, so the block reads as ceremonial */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(217,163,0,0.10),transparent_65%)]" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/2 items-center justify-start overflow-hidden md:flex">
+      <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-80 -translate-x-[125%] items-center justify-center md:flex lg:-translate-x-[135%]">
         <Image
           src="/svgs/logo.svg"
           alt=""
           width={320}
           height={320}
           aria-hidden="true"
-          className="-ml-12 h-64 w-64 object-contain opacity-[0.06] lg:h-80 lg:w-80"
+          className="h-56 w-56 object-contain opacity-[0.11] lg:h-72 lg:w-72"
         />
       </div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 items-center justify-end overflow-hidden md:flex">
+      <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-80 translate-x-[25%] items-center justify-center md:flex lg:translate-x-[35%]">
         <Image
           src="/oy_state_logo.jpeg"
           alt=""
           width={320}
           height={320}
           aria-hidden="true"
-          className="-mr-12 h-64 w-64 rounded-full object-contain opacity-[0.06] lg:h-80 lg:w-80"
+          className="h-56 w-56 rounded-full object-contain opacity-[0.11] lg:h-72 lg:w-72"
         />
       </div>
 
