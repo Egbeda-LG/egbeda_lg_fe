@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input"
 import "react-phone-number-input/style.css"
@@ -10,11 +10,14 @@ import {
   RiTimeLine,
   RiArrowRightLine,
   RiCheckLine,
+  RiCloseLine,
   RiErrorWarningLine,
+  RiImageAddLine,
 } from "@remixicon/react"
 import { ContactMapIllustration } from "./contact-map-illustration"
 import type { ContactAndSupport } from "@/lib/api"
 import {
+  createAttachmentUpload,
   submitContactMessage,
   type ContactFormValues,
 } from "@/modules/contact/contact.actions"
@@ -24,11 +27,100 @@ export type ContactFormData = ContactFormValues
 interface ContactContentSectionProps {
   /** The council's published contact details, when settings have been saved. */
   contact?: Partial<ContactAndSupport>
+  /** False when the council has not enabled resident uploads. */
+  attachmentsEnabled?: boolean
+  /**
+   * The upload rules, handed down by the server rather than imported here.
+   *
+   * The Server Action enforces the same two values, and a `"use server"` module
+   * may only export async functions. When both sides imported them from one
+   * module, the bundler folded that module into the action and re-exported the
+   * constants from it, which fails that rule at runtime.
+   */
+  attachmentContentTypes: readonly string[]
+  attachmentMaxBytes: number
 }
 
-export function ContactContentSection({ contact }: ContactContentSectionProps) {
+export function ContactContentSection({
+  contact,
+  attachmentsEnabled = false,
+  attachmentContentTypes,
+  attachmentMaxBytes,
+}: ContactContentSectionProps) {
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [attachment, setAttachment] = useState<File | null>(null)
+  const [attachmentError, setAttachmentError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  /*
+   * Bumping this remounts the file input, which is how its value gets cleared.
+   * A ref would be read during render via handleSubmit(onSubmit), which the
+   * React Compiler rules disallow.
+   */
+  const [fileInputKey, setFileInputKey] = useState(0)
+
+  const previewUrl = useMemo(
+    () => (attachment ? URL.createObjectURL(attachment) : null),
+    [attachment]
+  )
+
+  // Object URLs hold the file in memory until they are revoked.
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+    }
+  }, [previewUrl])
+
+  function chooseAttachment(file: File | null) {
+    setAttachmentError(null)
+
+    if (!file) {
+      setAttachment(null)
+      return
+    }
+
+    if (!attachmentContentTypes.includes(file.type)) {
+      setAttachmentError("Attach a JPG, PNG or WebP image.")
+      return
+    }
+
+    if (file.size > attachmentMaxBytes) {
+      setAttachmentError(
+        `That image is larger than ${Math.round(attachmentMaxBytes / 1024 / 1024)}MB.`
+      )
+      return
+    }
+
+    setAttachment(file)
+  }
+
+  function clearAttachment() {
+    setAttachment(null)
+    setAttachmentError(null)
+    setFileInputKey((key) => key + 1)
+  }
+
+  /**
+   * Asks the server for a one-time URL, then puts the file straight to S3 so
+   * the image never travels through this app.
+   */
+  async function uploadAttachment(file: File) {
+    const presigned = await createAttachmentUpload(file.name, file.type)
+
+    if (!presigned.ok) throw new Error(presigned.message)
+
+    const response = await fetch(presigned.uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type },
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error("The image could not be uploaded. Please try again.")
+    }
+
+    return presigned.fileUrl
+  }
 
   const address =
     contact?.headquater_address ?? "Egbeda Local Government Secretariat"
@@ -66,8 +158,26 @@ export function ContactContentSection({ contact }: ContactContentSectionProps) {
   const onSubmit = async (data: ContactFormData) => {
     setSubmitError(null)
 
+    let photoUrl: string | undefined
+
+    if (attachment) {
+      setUploading(true)
+
+      try {
+        photoUrl = await uploadAttachment(attachment)
+      } catch (error) {
+        setUploading(false)
+        setAttachmentError(
+          error instanceof Error ? error.message : "Upload failed."
+        )
+        return
+      }
+
+      setUploading(false)
+    }
+
     // Posts through a Server Action, so the browser never calls the API host.
-    const result = await submitContactMessage(data)
+    const result = await submitContactMessage({ ...data, photoUrl })
 
     if (!result.ok) {
       for (const [field, message] of Object.entries(result.fieldErrors ?? {})) {
@@ -81,6 +191,7 @@ export function ContactContentSection({ contact }: ContactContentSectionProps) {
 
     setSubmitted(true)
     reset()
+    clearAttachment()
 
     setTimeout(() => {
       setSubmitted(false)
@@ -357,14 +468,82 @@ export function ContactContentSection({ contact }: ContactContentSectionProps) {
                 )}
               </div>
 
+              {/* Attachment — only when the council has enabled uploads */}
+              {attachmentsEnabled && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#6A7181]">
+                    Photo (optional)
+                  </label>
+
+                  {attachment && previewUrl ? (
+                    <div className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-[#FAF8F9]/60 p-3">
+                      {/* Local preview; the file has not been uploaded yet */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={previewUrl}
+                        alt={attachment.name}
+                        className="h-16 w-16 shrink-0 rounded-xl object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-bold text-[#131313]">
+                          {attachment.name}
+                        </p>
+                        <p className="text-[11px] text-[#6A7181]">
+                          {(attachment.size / 1024 / 1024).toFixed(1)}MB
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={clearAttachment}
+                        aria-label="Remove photo"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#6A7181] transition-colors hover:bg-[#7A1F33]/10 hover:text-[#7A1F33]"
+                      >
+                        <RiCloseLine size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex cursor-pointer flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-gray-200 bg-[#FAF8F9]/50 p-6 text-center transition-colors hover:border-[#7A1F33]">
+                      <RiImageAddLine size={24} className="text-[#7A1F33]" />
+                      <span className="text-xs font-bold text-[#131313]">
+                        Add a photo of the issue
+                      </span>
+                      <span className="text-[11px] text-[#6A7181]">
+                        JPG, PNG or WebP · up to 5MB
+                      </span>
+                      <input
+                        key={fileInputKey}
+                        type="file"
+                        accept={attachmentContentTypes.join(",")}
+                        className="sr-only"
+                        onChange={(event) =>
+                          chooseAttachment(event.target.files?.[0] ?? null)
+                        }
+                      />
+                    </label>
+                  )}
+
+                  {attachmentError && (
+                    <p className="text-[11px] font-medium text-red-500">
+                      {attachmentError}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Submit Button */}
               <div className="pt-2">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploading}
                   className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#7A1F33] px-6 py-3.5 text-sm font-bold text-white shadow-xs transition-all hover:bg-[#621727] disabled:opacity-70"
                 >
-                  <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
+                  <span>
+                    {uploading
+                      ? "Uploading photo..."
+                      : isSubmitting
+                        ? "Sending..."
+                        : "Send Message"}
+                  </span>
                   <RiArrowRightLine size={16} />
                 </button>
               </div>

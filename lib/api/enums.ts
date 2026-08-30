@@ -93,6 +93,13 @@ export const NULGE_OFFICE_OPTIONS: SelectOption[] = [
   },
 ]
 
+/** past-government `election_type` */
+export const ELECTION_TYPE_OPTIONS: SelectOption[] = [
+  { value: "elected", label: "Elected" },
+  { value: "caretaker", label: "Caretaker" },
+  { value: "sole_administrator", label: "Sole Administrator" },
+]
+
 /** The platforms `social_media[].platform` can hold. */
 export const SOCIAL_PLATFORMS = [
   "tiktok",

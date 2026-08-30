@@ -1,64 +1,68 @@
 import React from "react"
 
-export function AboutPastChairmenSection() {
-  const col1 = [
-    { period: "1989", name: "HON. M.B FATUNBI (ELECTED)" },
-    { period: "1989 - 1990", name: "MRS. S. O SARUMI (SOLE)" },
-    { period: "1991 - 1993", name: "HON. ELDER C. WOLE OYELESE (ELECTED)" },
-    { period: "1994 - 1996", name: "MAJOR MRS. MASAKU (RTD.) (CARETAKER)" },
-    { period: "1997", name: "MR. ADEMOLA ADELAKUN (SOLE)" },
-    { period: "1997 - 1999", name: "HON. LATE M. OYALEKE (ELECTED)" },
-    { period: "1999", name: "MR. T. OJETUNDE (SOLE)" },
-    { period: "1999 - 2002", name: "HON. AKINADE ALAMU (ELECTED)" },
-  ]
+import { pastGovernmentApi, withFallback } from "@/lib/api"
+import {
+  toPastOfficeholders,
+  toTimelineColumns,
+  type PastOfficeholder,
+} from "@/modules/about-page/past-government.utils"
 
-  const col2 = [
-    { period: "2002 - 2003", name: "MR. SEGUN OYEDIRAN (CARETAKER)" },
-    { period: "2004 - 2006", name: "HON. CHIEF SUNBO OYEDIJO (CARETAKER)" },
-    { period: "2006 - 2007", name: "HON. (ENGR.) KOLAWOLE OKE (ACT CHAIRMAN)" },
-    { period: "2007", name: "HON. K.K OBISESAN (CARETAKER)" },
-    { period: "2007", name: "HON. (ENGR.) KOLAWOLE OKE (CARETAKER)" },
-    { period: "2007 - DEC. 2007", name: "HON. MR. WAHEED AMUZAT (CARETAKER)" },
-    {
-      period: "DEC. 2007 - DEC. 2010",
-      name: "HON. (ENGR.) KOLAWOLE OKE (ELECTED)",
-    },
-    { period: "1999 - 2002", name: "HON. MUFUTAU A. OYEWO (CARETAKER)" },
-  ]
+/**
+ * The roll the council published before the API carried it. Kept as a fallback
+ * so the page does not lose thirty years of history while
+ * `GET /past-government` is still empty; the API wins the moment it has rows.
+ *
+ * Periods and designations are pre-formatted here because the API models a
+ * term by its start date alone and cannot express "ACT CHAIRMAN" or "H.L.G.A".
+ */
+const FALLBACK_ROLL: PastOfficeholder[] = [
+  ["1989", "HON. M.B FATUNBI", "Elected"],
+  ["1989 - 1990", "MRS. S. O SARUMI", "Sole Administrator"],
+  ["1991 - 1993", "HON. ELDER C. WOLE OYELESE", "Elected"],
+  ["1994 - 1996", "MAJOR MRS. MASAKU (RTD.)", "Caretaker"],
+  ["1997", "MR. ADEMOLA ADELAKUN", "Sole Administrator"],
+  ["1997 - 1999", "HON. LATE M. OYALEKE", "Elected"],
+  ["1999", "MR. T. OJETUNDE", "Sole Administrator"],
+  ["1999 - 2002", "HON. AKINADE ALAMU", "Elected"],
+  ["1999 - 2002", "HON. MUFUTAU A. OYEWO", "Caretaker"],
+  ["2002 - 2003", "MR. SEGUN OYEDIRAN", "Caretaker"],
+  ["2004 - 2006", "HON. CHIEF SUNBO OYEDIJO", "Caretaker"],
+  ["2006 - 2007", "HON. (ENGR.) KOLAWOLE OKE", "Acting Chairman"],
+  ["2007", "HON. K.K OBISESAN", "Caretaker"],
+  ["2007", "HON. (ENGR.) KOLAWOLE OKE", "Caretaker"],
+  ["2007 - DEC. 2007", "HON. MR. WAHEED AMUZAT", "Caretaker"],
+  ["DEC. 2007 - DEC. 2010", "HON. (ENGR.) KOLAWOLE OKE", "Elected"],
+  ["MAY 2014 - 30TH MAY 2015", "HON. K.K OBISESAN", ""],
+  ["7TH MARCH 2016 - DEC. 2016", "HON. ADEMOLA ADEWUYI", "Caretaker"],
+  ["7TH APRIL 2017 - 14TH MAY 2018", "HON. SODIQ AKINTUNDE AKEEM", "Caretaker"],
+  ["14TH MAY 2018 - 29TH MAY 2019", "HON. SODIQ AKINTUNDE AKEEM", "Elected"],
+  ["29TH MAY 2019 - 23RD DEC. 2019", "ALHAJA A.A ADEPOJU", "H.L.G.A"],
+  ["23RD DEC. 2019 - 31ST JAN. 2020", "HON. SANDA SIKIRU OYEDELE", "Caretaker"],
+  [
+    "31ST JAN 2020 - 17TH MARCH 2021",
+    "HON. DOCTOR AMOS OLADELE O",
+    "Caretaker",
+  ],
+  ["24TH MAY 2021 - TILL DATE", "HON. SANDA SIKIRU OYEDELE", "Elected"],
+].map(([period, name, typeLabel], index) => ({
+  id: `fallback-${index}`,
+  period,
+  name,
+  typeLabel,
+}))
 
-  const col3 = [
-    { period: "MAY 2014 - 30TH MAY 2015", name: "HON. K.K OBISESAN" },
-    {
-      period: "7TH MARCH 2016 - DEC. 2016",
-      name: "HON. ADEMOLA ADEWUYI (CARETAKER)",
-    },
-    {
-      period: "7TH APRIL 2017 - 14TH MAY 2018",
-      name: "HON. SODIQ AKINTUNDE AKEEM (CARETAKER)",
-    },
-    {
-      period: "14TH MAY 2018 - 29TH MAY 2019",
-      name: "HON. SODIQ AKINTUNDE AKEEM (ELECTED)",
-    },
-    {
-      period: "29TH MAY 2019 - 23RD DEC. 2019",
-      name: "ALHAJA A.A ADEPOJU (H.L.G.A)",
-    },
-    {
-      period: "23RD DEC. 2019 - 31ST JAN. 2020",
-      name: "HON. SANDA SIKIRU OYEDELE (CARETAKER)",
-    },
-    {
-      period: "31ST JAN 2020 - 17TH MARCH 2021",
-      name: "HON. DOCTOR AMOS OLADELE O (CARETAKER)",
-    },
-    {
-      period: "24TH MAY 2021 - TILL DATE",
-      name: "HON. SANDA SIKIRU OYEDELE (ELECTED)",
-    },
-  ]
+export async function AboutPastChairmenSection() {
+  const roll = await withFallback(
+    () => pastGovernmentApi.list({ limit: 100 }),
+    { items: [], meta: { page: 1, limit: 100, total: 0, totalPages: 0 } },
+    "past government"
+  )
 
-  const columns = [col1, col2, col3]
+  const officeholders = roll.items.length
+    ? toPastOfficeholders(roll.items)
+    : FALLBACK_ROLL
+
+  const columns = toTimelineColumns(officeholders)
 
   return (
     <section className="border-b border-gray-100 bg-[#FAF8F9] py-16 md:py-24">
@@ -82,8 +86,8 @@ export function AboutPastChairmenSection() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
           {columns.map((col, colIndex) => (
             <div key={colIndex} className="relative space-y-6">
-              {col.map((item, itemIndex) => (
-                <div key={itemIndex} className="group flex items-start gap-3.5">
+              {col.map((item) => (
+                <div key={item.id} className="group flex items-start gap-3.5">
                   {/* Timeline Dot */}
                   <div className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-[#7A1F33] transition-transform group-hover:scale-125" />
 
@@ -92,9 +96,14 @@ export function AboutPastChairmenSection() {
                     <span className="mb-0.5 block text-[11px] font-extrabold tracking-wider text-[#7A1F33] uppercase">
                       {item.period}
                     </span>
-                    <h3 className="font-heading text-xs leading-snug font-extrabold text-[#131313] transition-colors group-hover:text-[#7A1F33] sm:text-sm">
+                    <h3 className="font-heading text-xs leading-snug font-extrabold text-[#131313] uppercase transition-colors group-hover:text-[#7A1F33] sm:text-sm">
                       {item.name}
                     </h3>
+                    {item.typeLabel && (
+                      <span className="mt-1 inline-block rounded-full bg-[#7A1F33]/10 px-2 py-0.5 text-[10px] font-bold text-[#7A1F33]">
+                        {item.typeLabel}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

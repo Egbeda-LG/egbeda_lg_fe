@@ -74,6 +74,24 @@ export type WardItem = {
   name: string
 }
 
+/**
+ * `GET /past-government` — one officeholder, recorded by the date their term
+ * began. The API stores no end date; a term runs until the next one starts.
+ */
+export type PastGovernmentItem = Timestamps & {
+  _id?: string
+  name: string
+  date: { year: number; month?: number; day?: number }
+  /** elected | caretaker | sole_administrator */
+  election_type: string
+}
+
+/** `GET /markets` — a council-managed market, keyed by `market_number`. */
+export type MarketItem = {
+  market_number: string
+  name: string
+}
+
 export type NewsItem = Timestamps & {
   _id: string
   title: string
@@ -186,6 +204,20 @@ export type ContactMessage = Timestamps & {
   photo_url?: string
 }
 
+/** Body accepted by `POST /uploads/presigned-url`. */
+export type PresignedUploadPayload = {
+  file_name: string
+  content_type: string
+  folder: string
+}
+
+export type PresignedUploadResponse = {
+  upload_url: string
+  file_url: string
+  key: string
+  expires_in: number
+}
+
 /** Body accepted by `POST /messages`. `phone` and `photo_url` are optional. */
 export type ContactMessagePayload = {
   first_name: string
@@ -246,6 +278,7 @@ export type OrganizationSettings = Timestamps & {
   _id?: string
   organization?: Partial<OrganizationDetails>
   chairman_info?: Partial<ChairmanInfo>
+  vice_chairman_info?: Partial<ChairmanInfo>
   contact_and_support?: Partial<ContactAndSupport>
   social_media?: SocialMediaLink[]
 }

@@ -1,4 +1,5 @@
 import { AboutSection } from "./components/about-section"
+import { AnthemSection } from "./components/anthem-section"
 import { StatsSection } from "@/components/stats-section"
 import { ChairmanSection } from "./components/chairman-section"
 import { DepartmentsSection } from "./components/departments-section"
@@ -31,6 +32,9 @@ export function LandingPage() {
       </FadeIn>
       <FadeIn>
         <StatsSection />
+      </FadeIn>
+      <FadeIn>
+        <AnthemSection />
       </FadeIn>
       <FadeIn>
         <NewsSection />
