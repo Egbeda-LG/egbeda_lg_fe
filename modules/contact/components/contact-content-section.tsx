@@ -129,14 +129,6 @@ export function ContactContentSection({
     .filter(Boolean)
     .join(" · ")
 
-  /* National emergency numbers are fixed; the council's own lines come from settings. */
-  const emergencyLines = [
-    { label: "Oyo Emergency", value: "112" },
-    { label: "LASEMA Rapid Response", value: "767" },
-    { label: "Council Emergency Line", value: contact?.emergency_line_1 },
-    { label: "Alternate Council Line", value: contact?.emergency_line_2 },
-  ].filter((line) => Boolean(line.value))
-
   const {
     register,
     control,
@@ -550,34 +542,8 @@ export function ContactContentSection({
             </form>
           </div>
 
-          {/* Right Column: Emergency Lines & Council Secretariat Map */}
+          {/* Right Column: Council Secretariat Map */}
           <div className="space-y-6 lg:col-span-5">
-            {/* Emergency Line Card */}
-            <div className="space-y-5 rounded-3xl bg-[#7A1F33] p-6 text-white shadow-sm sm:p-8">
-              <span className="block font-heading text-xs font-extrabold tracking-wider text-[#D9A300] uppercase">
-                EMERGENCY LINE
-              </span>
-
-              <div className="space-y-4 divide-y divide-white/10 font-sans text-xs sm:text-sm">
-                {emergencyLines.map((line, index) => (
-                  <div
-                    key={line.label}
-                    className={`flex items-center justify-between gap-3 ${
-                      index === 0 ? "pt-1" : "pt-3"
-                    }`}
-                  >
-                    <span className="font-medium">{line.label}</span>
-                    <a
-                      href={`tel:${line.value}`}
-                      className="text-sm font-bold text-[#D9A300] hover:underline sm:text-base"
-                    >
-                      {line.value}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Council Secretariat Map Box */}
             <div className="space-y-0 overflow-hidden rounded-3xl border border-gray-100/90 bg-white shadow-sm">
               {/* Dark Map Vector Illustration */}
