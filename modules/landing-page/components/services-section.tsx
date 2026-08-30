@@ -227,17 +227,6 @@ export async function ServicesSection() {
                     {service.description}
                   </p>
                 </div>
-
-                {/* Card Action Link */}
-                <div>
-                  <Link
-                    href={service.href}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[#7A1F33] transition-all group-hover:gap-2"
-                  >
-                    <span>Get started</span>
-                    <RiArrowRightLine size={14} />
-                  </Link>
-                </div>
               </div>
             )
           })}

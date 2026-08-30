@@ -96,6 +96,7 @@ export type NewsItem = Timestamps & {
   title: string
   /** Rich text authored in the admin editor. Rendered as HTML. */
   content: string
+  date: string
   status: string
   is_featured: boolean
   category: string

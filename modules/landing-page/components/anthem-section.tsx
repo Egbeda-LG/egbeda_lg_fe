@@ -1,4 +1,5 @@
 import React from "react"
+import Image from "next/image"
 
 /**
  * The Oyo State anthem, reproduced exactly as the council supplied it.
@@ -39,6 +40,26 @@ export function AnthemSection() {
     >
       {/* Warm wash behind the verses, so the block reads as ceremonial */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(217,163,0,0.10),transparent_65%)]" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/2 items-center justify-start overflow-hidden md:flex">
+        <Image
+          src="/svgs/logo.svg"
+          alt=""
+          width={320}
+          height={320}
+          aria-hidden="true"
+          className="-ml-12 h-64 w-64 object-contain opacity-[0.06] lg:h-80 lg:w-80"
+        />
+      </div>
+      <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 items-center justify-end overflow-hidden md:flex">
+        <Image
+          src="/oy_state_logo.jpeg"
+          alt=""
+          width={320}
+          height={320}
+          aria-hidden="true"
+          className="-mr-12 h-64 w-64 rounded-full object-contain opacity-[0.06] lg:h-80 lg:w-80"
+        />
+      </div>
 
       <div className="relative z-10 mx-auto max-w-3xl px-4 text-center md:px-8">
         {/* Pill Badge */}

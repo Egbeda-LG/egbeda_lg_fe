@@ -3,7 +3,6 @@ import {
   PLACEHOLDER_IMAGE,
   coverImageFromHtml,
   excerpt,
-  formatCardDate,
   toDetailSlug,
 } from "@/lib/content"
 
@@ -35,7 +34,7 @@ export function toNewsCard(item: NewsItem): NewsCard {
     href: `/newsroom/${toDetailSlug(item.title, item._id)}`,
     category: item.category,
     categoryLabel: optionLabel(NEWS_CATEGORY_OPTIONS, item.category),
-    date: formatCardDate(item.createdAt),
+    date: item.date?.trim() || "",
     excerpt: excerpt(item.content, 200),
     image: coverImageFromHtml(item.content) ?? PLACEHOLDER_IMAGE,
   }

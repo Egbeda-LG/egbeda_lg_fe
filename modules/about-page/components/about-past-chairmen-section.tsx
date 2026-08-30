@@ -99,11 +99,6 @@ export async function AboutPastChairmenSection() {
                     <h3 className="font-heading text-xs leading-snug font-extrabold text-[#131313] uppercase transition-colors group-hover:text-[#7A1F33] sm:text-sm">
                       {item.name}
                     </h3>
-                    {item.typeLabel && (
-                      <span className="mt-1 inline-block rounded-full bg-[#7A1F33]/10 px-2 py-0.5 text-[10px] font-bold text-[#7A1F33]">
-                        {item.typeLabel}
-                      </span>
-                    )}
                   </div>
                 </div>
               ))}

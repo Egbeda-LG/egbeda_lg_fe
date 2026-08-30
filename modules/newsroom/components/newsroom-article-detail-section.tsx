@@ -4,11 +4,7 @@ import Link from "next/link"
 import { RiArrowRightLine } from "@remixicon/react"
 
 import type { NewsItem } from "@/lib/api"
-import {
-  PLACEHOLDER_IMAGE,
-  coverImageFromHtml,
-  formatCardDate,
-} from "@/lib/content"
+import { PLACEHOLDER_IMAGE, coverImageFromHtml } from "@/lib/content"
 import { NEWS_CATEGORY_OPTIONS, optionLabel } from "@/lib/api"
 import type { NewsCard } from "@/modules/newsroom/newsroom.utils"
 
@@ -31,7 +27,7 @@ export function NewsroomArticleDetailSection({
           <article className="space-y-6 rounded-3xl border border-gray-100/90 bg-white p-6 shadow-sm sm:p-10 lg:col-span-7">
             {/* Category & Date Header */}
             <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-[#7A1F33] uppercase">
-              <span>{formatCardDate(article.createdAt)}</span>
+              <span>{article.date}</span>
               <span>•</span>
               <span>
                 {optionLabel(NEWS_CATEGORY_OPTIONS, article.category)}
