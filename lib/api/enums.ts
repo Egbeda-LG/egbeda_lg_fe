@@ -84,7 +84,7 @@ export const NULGE_OFFICE_OPTIONS: SelectOption[] = [
   { value: "secretary", label: "Secretary" },
   { value: "treasurer", label: "Treasurer" },
   { value: "woman_chairperson", label: "Woman Chairperson" },
-  { value: "assistant_chairperson", label: "Assistant Chairperson" },
+  { value: "assistant_secretary", label: "Assistant Secretary" },
   { value: "trustee", label: "Trustee" },
   { value: "auditor", label: "Auditor" },
   {
