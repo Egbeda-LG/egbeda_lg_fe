@@ -1,14 +1,41 @@
+"use client"
+
 import React from "react"
 import { RiArrowRightLine } from "@remixicon/react"
 
+const HERO_IMAGES = [
+  "/hero_1.jpeg",
+  "/hero_2.jpeg",
+  "/hero_3.jpeg",
+  "/hero_4.jpeg",
+  "/hero_5.jpeg",
+  "/hero_6.jpeg",
+]
+
 export function HeroSection() {
+  const [activeImage, setActiveImage] = React.useState(0)
+
+  React.useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveImage((current) => (current + 1) % HERO_IMAGES.length)
+    }, 5000)
+
+    return () => window.clearInterval(interval)
+  }, [])
+
   return (
     <section className="relative flex min-h-[580px] items-center justify-start overflow-hidden bg-gray-900 lg:min-h-[660px]">
-      {/* Background Image with Dark Overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 hover:scale-105"
-        style={{ backgroundImage: `url('/hero-bg.jpg')` }}
-      />
+      {/* Background carousel with dark overlay */}
+      {HERO_IMAGES.map((image, index) => (
+        <div
+          key={image}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 hover:scale-105"
+          style={{
+            backgroundImage: `url('${image}')`,
+            opacity: index === activeImage ? 1 : 0,
+          }}
+        />
+      ))}
 
       {/* Gradient Dark Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-black/40" />
