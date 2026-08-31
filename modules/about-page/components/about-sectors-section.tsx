@@ -10,7 +10,20 @@ import {
   RiHeartPulseLine,
 } from "@remixicon/react"
 
-export function AboutSectorsSection() {
+import { organizationSettingsApi, withFallback } from "@/lib/api"
+import { formatNumber } from "@/lib/content"
+
+export async function AboutSectorsSection() {
+  const settings = await withFallback(
+    () => organizationSettingsApi.get(),
+    {},
+    "organization settings"
+  )
+  const primarySchools = settings.organization?.no_of_pry_schools ?? 130
+  const secondarySchools = settings.organization?.no_of_sec_schools ?? 93
+  const publicSchools = settings.organization?.no_of_schools ?? 39637
+  const healthCentres = settings.organization?.no_of_health_centres ?? 57
+
   const upperSectors = [
     {
       icon: RiBuilding2Line,
@@ -129,12 +142,16 @@ export function AboutSectorsSection() {
               {/* Description */}
               <p className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm">
                 The LGA is served by{" "}
-                <strong className="text-[#131313]">130 primary schools</strong>{" "}
+                <strong className="text-[#131313]">
+                  {formatNumber(primarySchools)} primary schools
+                </strong>{" "}
                 and{" "}
-                <strong className="text-[#131313]">93 secondary schools</strong>
-                . Public primary enrolment reached 29,374 (pupil–teacher ratio
+                <strong className="text-[#131313]">
+                  {formatNumber(secondarySchools)} secondary schools
+                </strong>
+                . Public primary enrolment reached 29,374 (pupil-teacher ratio
                 27), while public secondary enrolment stood at 10,263
-                (student–teacher ratio 34).
+                (student-teacher ratio 34).
               </p>
             </div>
 
@@ -142,7 +159,7 @@ export function AboutSectorsSection() {
             <div className="grid grid-cols-3 gap-3 pt-2">
               <div className="rounded-xl border border-gray-100/80 bg-white p-3.5 text-left shadow-2xs">
                 <div className="font-heading text-base font-extrabold text-[#131313] sm:text-lg">
-                  130
+                  {formatNumber(primarySchools)}
                 </div>
                 <div className="mt-0.5 text-[9px] font-extrabold tracking-wider text-[#6A7181] uppercase">
                   PRIMARY SCHOOLS
@@ -151,7 +168,7 @@ export function AboutSectorsSection() {
 
               <div className="rounded-xl border border-gray-100/80 bg-white p-3.5 text-left shadow-2xs">
                 <div className="font-heading text-base font-extrabold text-[#131313] sm:text-lg">
-                  93
+                  {formatNumber(secondarySchools)}
                 </div>
                 <div className="mt-0.5 text-[9px] font-extrabold tracking-wider text-[#6A7181] uppercase">
                   SECONDARY SCHOOLS
@@ -160,7 +177,7 @@ export function AboutSectorsSection() {
 
               <div className="rounded-xl border border-gray-100/80 bg-white p-3.5 text-left shadow-2xs">
                 <div className="font-heading text-base font-extrabold text-[#131313] sm:text-lg">
-                  39,637
+                  {formatNumber(publicSchools)}
                 </div>
                 <div className="mt-0.5 text-[9px] font-extrabold tracking-wider text-[#6A7181] uppercase">
                   PUBLIC SCHOOLS
@@ -185,7 +202,7 @@ export function AboutSectorsSection() {
               {/* Description */}
               <p className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm">
                 <strong className="text-[#131313]">
-                  57 health institutions
+                  {formatNumber(healthCentres)} health institutions
                 </strong>{" "}
                 serve the Local Government area. Infant and maternal mortality
                 remain very low, and immunisation coverage against

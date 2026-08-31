@@ -2,7 +2,7 @@ import React from "react"
 import Image from "next/image"
 
 import { organizationSettingsApi, withFallback } from "@/lib/api"
-import { formatNumber, placementImage } from "@/lib/content"
+import { formatNumber } from "@/lib/content"
 
 /** The council's own history text, kept as static copy until settings carry it. */
 const FALLBACK_PROFILE = [
@@ -19,10 +19,7 @@ export async function AboutProfileSection() {
 
   const organization = settings.organization
 
-  /* The chairman block further down takes the first "about" image. */
-  const photo =
-    placementImage(settings.chairman_info?.images, "about", 1) ??
-    "/images/about-profile-gate.jpg"
+  const photo = "/images/about-profile-gate.jpg"
 
   const paragraphs = organization?.about
     ? organization.about

@@ -1,6 +1,4 @@
 import React from "react"
-import Link from "next/link"
-import { RiArrowRightLine } from "@remixicon/react"
 
 import type { ContactAndSupport, ServiceItem } from "@/lib/api"
 
@@ -106,17 +104,6 @@ export function ServiceDetailSection({
               </div>
             </div>
           </section>
-
-          {/* 6. Action Button */}
-          <div className="pt-4">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#D9A300] px-8 py-3 text-xs font-bold text-white shadow-2xs transition-colors hover:bg-[#c29200] sm:text-sm"
-            >
-              <span>Apply now</span>
-              <RiArrowRightLine size={16} />
-            </Link>
-          </div>
         </div>
       </div>
     </div>
