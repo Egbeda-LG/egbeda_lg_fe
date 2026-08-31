@@ -12,6 +12,7 @@ export type ProjectCard = {
   wardName: string
   contractor: string
   schedule: string
+  isFeatured: boolean
 }
 
 export function toProjectCard(project: ProjectItem): ProjectCard {
@@ -25,6 +26,7 @@ export function toProjectCard(project: ProjectItem): ProjectCard {
     wardName: project.ward?.name ?? "",
     contractor: project.contractor,
     schedule: formatDateRange(project.start_date, project.end_date),
+    isFeatured: project.is_featured,
   }
 }
 

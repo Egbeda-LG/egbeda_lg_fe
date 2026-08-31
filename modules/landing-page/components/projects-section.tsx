@@ -4,7 +4,10 @@ import Link from "next/link"
 import { RiMapPinLine, RiArrowRightLine } from "@remixicon/react"
 
 import { projectsApi, withFallback } from "@/lib/api"
-import { toProjectCards } from "@/modules/projects/projects.utils"
+import {
+  toProjectCards,
+  type ProjectCard,
+} from "@/modules/projects/projects.utils"
 
 export async function ProjectsSection() {
   const response = await withFallback(
@@ -16,6 +19,12 @@ export async function ProjectsSection() {
   const projects = toProjectCards(response.items)
 
   if (projects.length === 0) return null
+
+  const featuredProject =
+    projects.find((project) => project.isFeatured) ?? projects[0]
+  const projectList = projects.filter(
+    (project) => project.id !== featuredProject.id
+  )
 
   return (
     <section id="projects" className="bg-white py-16 md:py-24">
@@ -54,51 +63,72 @@ export async function ProjectsSection() {
           </div>
         </div>
 
-        {/* 3x2 Grid of Project Cards */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100/90 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              {/* Card Image with Status Overlay */}
-              <div className="relative h-52 w-full overflow-hidden bg-gray-100">
+        {/* Featured project mirrors the news section layout. */}
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+          <div className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-gray-100/90 bg-white p-6 shadow-xs transition-all hover:shadow-md lg:col-span-6">
+            <div>
+              <div className="relative mb-6 h-64 w-full overflow-hidden rounded-xl bg-gray-100 sm:h-72">
                 <Image
-                  src={project.image}
-                  alt={project.title}
+                  src={featuredProject.image}
+                  alt={featuredProject.title}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  priority
                 />
               </div>
 
-              {/* Card Content */}
-              <div className="flex flex-1 flex-col justify-between p-6">
-                <div>
-                  {/* Title */}
-                  <h3 className="mb-2 font-heading text-base leading-snug font-bold text-[#131313] sm:text-lg">
-                    {project.title}
-                  </h3>
+              <h3 className="mb-2 font-heading text-lg leading-snug font-extrabold text-[#131313] sm:text-xl">
+                {featuredProject.title}
+              </h3>
 
-                  {/* Location */}
-                  <div className="mb-3 flex items-center gap-1.5 text-xs font-medium text-[#6A7181]">
-                    <RiMapPinLine
-                      size={14}
-                      className="shrink-0 text-[#7A1F33]"
-                    />
-                    <span>{project.location}</span>
-                  </div>
-
-                  {/* Description */}
-                  <p className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm">
-                    {project.description}
-                  </p>
-                </div>
+              <div className="mb-3 flex items-center gap-1.5 text-xs font-medium text-[#6A7181]">
+                <RiMapPinLine size={14} className="shrink-0 text-[#7A1F33]" />
+                <span>{featuredProject.location}</span>
               </div>
+
+              <p className="font-sans text-xs leading-relaxed text-[#6A7181] sm:text-sm">
+                {featuredProject.description}
+              </p>
             </div>
-          ))}
+          </div>
+
+          <div className="space-y-6 lg:col-span-6">
+            {projectList.map((project) => (
+              <ProjectListCard key={project.id} project={project} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
+  )
+}
+
+function ProjectListCard({ project }: { project: ProjectCard }) {
+  return (
+    <div className="group flex flex-col items-start gap-4 rounded-2xl border border-gray-100/90 bg-white p-4 shadow-xs transition-all hover:shadow-md sm:flex-row sm:items-center sm:gap-5 sm:p-5">
+      <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-24 sm:w-36">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          sizes="(max-width: 640px) 100vw, 150px"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <h4 className="mb-1.5 line-clamp-2 font-heading text-sm leading-snug font-bold text-[#131313]">
+          {project.title}
+        </h4>
+        <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium text-[#6A7181]">
+          <RiMapPinLine size={13} className="shrink-0 text-[#7A1F33]" />
+          <span>{project.location}</span>
+        </div>
+        <p className="line-clamp-2 font-sans text-xs leading-relaxed text-[#6A7181]">
+          {project.description}
+        </p>
+      </div>
+    </div>
   )
 }
