@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/content"
 
 /** The council's own history text, kept as static copy until settings carry it. */
 const FALLBACK_PROFILE = [
-  "Egbeda Local Government, with headquarters at Egbeda, was carved out from the defunct Lagelu Local Government in 1989. The creation of Local Council Development Areas (LCDs) in Oyo State was approved on August 23rd, 2016 and signed into law on October 6, 2016 by former Governor Abiola Ajimobi.",
+  "Egbeda Local Government, with headquarters at Egbeda, was carved out from the defunct Lagelu Local Government in 1989. The creation of Local Council Development Areas (LCDAs) in Oyo State was officially created and signed into law on October 6th, 2016. Ajorosun (LCDA) is one of them which is part of the Egbeda Local Government.",
   "This legislation created 35 LCDAs out of the existing 33 constitutionally recognized Local Government Areas (LGAs) to accelerate grassroots development, which Ajorosun LCDA was carved out from Egbeda Local Government. LCDAs were created to bring government closer to the people, they are essentially administrative outposts and do not receive direct funding from the Federation Account like the 33 statutory LGAs.",
 ]
 
