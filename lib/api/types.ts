@@ -238,10 +238,19 @@ export type OrganizationDetails = {
   landmass_per_sq_km: number
   population: number
   no_of_wards: number
+  /** Split counts; `no_of_schools` is their total. Not always returned. */
+  no_of_pry_schools?: number
+  no_of_sec_schools?: number
   no_of_schools: number
   no_of_health_centres: number
   no_of_staffs: number
   about: string
+  /**
+   * Not yet returned by the API. Declared so the About profile picks up a
+   * council-supplied photo the moment `organization` carries one, instead of
+   * borrowing a portrait from `chairman_info`.
+   */
+  images?: PlacementImage[]
 }
 
 export type ChairmanInfo = {

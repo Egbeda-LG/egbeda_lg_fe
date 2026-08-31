@@ -19,9 +19,14 @@ export async function AboutProfileSection() {
 
   const organization = settings.organization
 
-  /* The chairman block further down takes the first "about" image. */
+  /*
+   * This section is about the place, not the chairman, so it will not fall back
+   * to a portrait from `chairman_info` - that put a photograph of the chairman
+   * where the design calls for the secretariat. `organization` carries no image
+   * field yet, so the council's own photo stands in until it does.
+   */
   const photo =
-    placementImage(settings.chairman_info?.images, "about", 1) ??
+    placementImage(organization?.images, "about") ??
     "/images/about-profile-gate.jpg"
 
   const paragraphs = organization?.about
