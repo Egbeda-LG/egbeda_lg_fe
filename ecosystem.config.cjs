@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'egbeda-lg-web',
       script: '.next/standalone/server.js',
-      cwd: process.env.APP_DIR || '/var/www/egbeda_lg_fe',
+      cwd: process.env.APP_DIR || '/home/ubuntu/apps/egbeda_lg_fe',
       instances: 1,
       exec_mode: 'fork',
       max_memory_restart: '200M',

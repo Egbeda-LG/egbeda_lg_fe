@@ -48,6 +48,16 @@ jobs:
           cp -R deploy release/deploy
           tar -czf egbeda-lg-web.tar.gz -C release .
 
+      - name: Verify deployment credentials
+        env:
+          DEPLOY_HOST: ${{ secrets.PROD_EC2_HOST }}
+          DEPLOY_USER: ${{ secrets.EC2_USER }}
+          DEPLOY_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          test -n "$DEPLOY_HOST" || { echo "Missing PROD_EC2_HOST secret."; exit 1; }
+          test -n "$DEPLOY_USER" || { echo "Missing EC2_USER secret."; exit 1; }
+          test -n "$DEPLOY_KEY" || { echo "Missing EC2_SSH_KEY secret."; exit 1; }
+
       - name: Upload release to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -68,7 +78,7 @@ jobs:
           script: |
             set -euo pipefail
             APP_DIR="${{ secrets.WEB_APP_DIR }}"
-            APP_DIR="${APP_DIR:-/var/www/egbeda_lg_fe}"
+            APP_DIR="${APP_DIR:-/home/ubuntu/apps/egbeda_lg_fe}"
             mkdir -p "$APP_DIR"
             rm -rf "$APP_DIR/.next" "$APP_DIR/deploy" "$APP_DIR/ecosystem.config.cjs"
             tar -xzf /tmp/egbeda-lg-web.tar.gz -C "$APP_DIR"

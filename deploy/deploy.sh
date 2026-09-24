@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/var/www/egbeda_lg_fe}"
+APP_DIR="${APP_DIR:-/home/ubuntu/apps/egbeda_lg_fe}"
 APP_NAME="${APP_NAME:-egbeda-lg-web}"
 export APP_DIR APP_NAME
 
