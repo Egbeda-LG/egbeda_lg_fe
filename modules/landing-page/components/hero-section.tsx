@@ -10,6 +10,7 @@ const HERO_IMAGES = [
   "/hero_4.jpeg",
   "/hero_5.jpeg",
   "/hero_6.jpeg",
+  "/images/oy_state_logo.jpeg",
 ]
 
 export function HeroSection() {
